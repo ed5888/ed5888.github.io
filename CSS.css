@@ -1,0 +1,425 @@
+/* ======================= COLORS & VARIABLES ======================= */
+
+:root {
+    --body-bg-color: #F4F5FC;
+    --left-menu-bg-color: #4346e9;
+    --left-menu-selected-color: rgba(255,255,255,0.2);
+    --left-menu-item-color-hover: rgba(255,255,255,0.2);
+    --left-menu-text-color: #ffffff;
+    --top-menu-bg-color: #ECEEF9;
+    --top-menu-height: 80px;
+    --search-bg-color: #FAFCFF;
+    --path-url-font-size: 15px;
+    --title-font-color: #0D266C;
+    --main-button-color: #4346e9;
+    --main-button-color-hover: #1848af;
+    --secondary-button-color: #E9EEFA;
+    --secondary-button-color-hover: #dce7fd;
+}
+
+/* ======================= BACKGROUND ======================= */
+
+.workspace.dynamic-width {
+   background: var(--body-bg-color);
+   background-size: cover;
+}
+
+.workspace-layout.main-page-content {
+    background: var(--body-bg-color)!important;
+}
+
+.page-section-title {
+    color: var(--title-font-color)!important;
+}
+
+.my-work-header * {
+    color: var(--title-font-color)!important;
+}
+
+/* ======================= LEFT MENU ======================= */
+
+.group-navigation {
+    display:none;
+}
+
+.collapsing-panel * {
+    color: var(--left-menu-text-color)!important;
+}
+
+.section.top.is-selected {
+    background: var(--left-menu-selected-color)!important;
+}
+
+.collapsing-panel {
+    background: var(--left-menu-bg-color)!important;
+    border-right: none!important
+}
+
+.group-list {
+    background: transparent!important;
+    border-right: none!important
+}
+
+a.subsection.item:hover {
+    background: var(--left-menu-item-color-hover)!important;
+}
+
+.section.top:hover {
+    background: var(--left-menu-item-color-hover)!important;
+}
+
+.section.logo-section.group-navigation-logo:hover {
+    background: var(--left-menu-item-color-hover)!important;
+}
+
+.lock-icon {
+    fill: var(--left-menu-text-color)!important;
+    stroke: var(--left-menu-bg-color)!important;
+}
+
+.clock-icon {
+    fill: var(--left-menu-bg-color)!important;
+}
+
+.clock-path {
+    fill: var(--left-menu-text-color)!important;
+}
+
+/* ======================= TOP MENU ======================= */
+
+.workspace-layout.main-page-content {
+    height: calc(100% - var(--top-menu-height))!important;
+}
+
+.header-container {
+    height: var(--top-menu-height)!important;
+    background: var(--top-menu-bg-color)!important;
+}
+
+.search-section {
+    width: 800px!important;
+    height: calc(var(--top-menu-height) / 2);
+    background: var(--search-bg-color)!important;
+}
+
+.publish-button.search-button {
+    height: calc(var(--top-menu-height) / 2)!important;
+}
+
+.breadcrumb.main-page-breadcrumb.breadcrumb {
+    font-size: var(--path-url-font-size);
+}
+
+.header-container .header-right-element .subsection[data-v-7ccb0f80] {
+    align-items: center;
+}
+
+/* ======================= CARD ======================= */
+
+/* .card-with-border.square-mini-layout.clickable {
+    box-shadow: 0px 0px 15px #DCE0EF!important;
+} */
+
+/* ======================= WIDGET ======================= */
+
+div#widget-one {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    overflow: hidden;
+}
+
+div#widget-two {
+    grid-column-start: 4;
+    grid-column-end: 5;
+    grid-row-start: 1;
+    grid-row-end: 2;
+}
+
+div#widget-three {
+    grid-column-start: 5;
+    grid-column-end: 6;
+    grid-row-start: 1;
+    grid-row-end: 2;
+}
+
+#homepage-custom-html-section {
+    width: 100%!important;
+}
+
+#group-custom-html-section {
+    width: 100%!important;
+}
+
+.widget-title {
+    color: var(--title-font-color);
+    font-size: 26px;
+    line-height: 45px;
+    width: 100%;
+    text-align: center;
+}
+
+.widget-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    //grid-template-rows: 1fr 1fr;
+    margin: 20px 0px 20px 0px;
+    gap: 20px;
+}
+
+.widget-bloc {
+    border: 1px solid #DCE0EF;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    min-height: 110px;
+    text-align: center;
+    color: #0D266C;
+    background: #ffffff!important;
+    flex-direction: column;
+}
+
+.widget-bloc:hover {
+  border-color: #c0c4cc;
+  cursor:pointer;
+}
+
+img.widget-img {
+    width: 30px;
+    margin-bottom: 5px;
+}
+
+/* ======================= CHIPS ======================= */
+
+button.chip {
+    background-color: var(--body-bg-color)!important;
+}
+
+.swiper-container-after::after {
+    background: linear-gradient(to right, transparent, var(--body-bg-color)104px)!important;
+}
+
+
+.icon-toggler.workspace-view-toggler {
+    background-color: var(--body-bg-color)!important;
+}
+
+.tabs {
+    background-color: transparent!important;
+}
+
+.tabs.manage-user-toggler {
+    background: var(--body-bg-color)!important;
+}
+
+/* ======================= REACTION ======================= */
+
+.reaction-box.selected {
+    border: 2px solid var(--main-button-color)!important;
+    outline: none!important;
+}
+
+.reaction-box.selected .reaction-wording {
+    color: var(--main-button-color)!important;
+}
+
+/* ======================= HELP CENTER ======================= */
+
+.section.subsection:hover {
+    background: var(--left-menu-item-color-hover)!important;
+}
+
+hr.separator {
+    background-color: var(--left-menu-item-color-hover)!important;
+}
+
+/* ======================= PLUS BUTTON ======================= */
+
+.icon-action.icon-button.impactful.medium-icon-button{
+    background: var(--main-button-color)!important;
+}
+
+/* ======================= ARROW CAROUSEL ======================= */
+
+.icon-action.icon-button.carousel-arrow.impactful {
+    background: var(--main-button-color)!important;
+}
+
+/* ======================= HIGH IMPACT BUTTON ======================= */
+
+.button-regular.high-impact {
+    background-color: var(--main-button-color)!important;
+    color: white!important;
+}
+
+.button-regular.high-impact:hover {
+    background-color: var(--main-button-color-hover)!important;
+}
+
+.button-regular.high-impact.disabled {
+    background-color: #f3f3f9!important;
+    color: #c0c4cc!important;
+}
+
+/* ======================= MEDIUM IMPACT BUTTON ======================= */
+
+.button-regular.medium-impact{
+    background-color: var(--secondary-button-color)!important;
+    color: var(--main-button-color)!important;
+}
+
+.button-regular.medium-impact:hover {
+    background-color: var(--secondary-button-color-hover)!important;
+}
+
+/* ======================= LOW IMPACT BUTTON ======================= */
+
+.button-regular.low-impact{
+  color: var(--main-button-color)!important;
+}
+
+.button-regular.low-impact:hover{
+  background-color: var(--secondary-button-color-hover)!important;
+  color: var(--main-button-color)!important;
+}
+
+/* ======================= MESSAGE PIN ======================= */
+
+.pin-tag.tag {
+    color: var(--main-button-color)!important;
+}
+
+.horizontal-stripe.highlight {
+    background: var(--main-button-color)!important;
+    outline: var(--main-button-color)!important;
+}
+
+/* ======================= FONTS ======================= */
+/*
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap');
+
+*{
+  font-family: 'Montserrat', sans-serif!important;
+}
+*/
+
+/* ======================= POP UP ======================= */
+
+div#pendo-base {
+    display: none!important;
+}
+
+.onboarding-pulsar {
+    display: none!important;
+}
+
+.pendo-resource-center-badge-notification-bubble {
+    display: none!important;
+}
+
+/* ======================= CAROUSEL ======================= */
+
+.carousel {
+    position: relative;
+}
+
+.carousel-inner {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.carousel-open:checked + .carousel-item {
+    position: static;
+    opacity: 100;
+}
+
+.carousel-item {
+    position: absolute;
+    opacity: 0;
+    -webkit-transition: opacity 0.6s ease-out;
+    transition: opacity 0.6s ease-out;
+}
+
+.carousel-item img {
+    display: block;
+    height: auto;
+    max-width: 100%;
+}
+
+.carousel-control {
+    background: rgba(0, 0, 0, 0.28);
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    display: none;
+    font-size: 40px;
+    height: 40px;
+    line-height: 35px;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translate(0, -50%);
+    cursor: pointer;
+    -ms-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+    text-align: center;
+    width: 40px;
+    z-index: 10;
+}
+
+.carousel-control.prev {
+    left: 2%;
+}
+
+.carousel-control.next {
+    right: 2%;
+}
+
+.carousel-control:hover {
+    background: rgba(0, 0, 0, 0.8);
+    color: #aaaaaa;
+}
+
+#carousel-1:checked ~ .control-1,
+#carousel-2:checked ~ .control-2,
+#carousel-3:checked ~ .control-3 {
+    display: block;
+}
+
+.carousel-indicators {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    bottom: 2%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 10;
+}
+
+.carousel-indicators li {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.carousel-bullet {
+    color: #fff;
+    cursor: pointer;
+    display: block;
+    font-size: 35px;
+}
+
+.carousel-bullet:hover {
+    color: #aaaaaa;
+}
+
+#carousel-1:checked ~ .control-1 ~ .carousel-indicators li:nth-child(1) .carousel-bullet,
+#carousel-2:checked ~ .control-2 ~ .carousel-indicators li:nth-child(2) .carousel-bullet,
+#carousel-3:checked ~ .control-3 ~ .carousel-indicators li:nth-child(3) .carousel-bullet {
+    color: #428bca;
+}
