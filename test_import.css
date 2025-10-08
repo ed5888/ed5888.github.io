@@ -1,4 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap');
+
 * {
     font-family: 'Plus Jakarta Sans', sans-serif!important;
     border-color: #efefef!important;
 }
+
+hr.separator {
+    display: none;
+}
+
+.header-container {
+    background: #f7f7f7!important;
+    border: none !important;
+}
+
+div#pendo-base {
+    display: none !important;
+}
+
+.tooltip > .body.dark {
+    display: none!important;
+}
+
+/* ========== BORDERS REPLACE BY LIGHT BACKGROUND ========== */
+
+.swiper-slide {
+    margin-right: 16px!important;
+}
+
+.card-with-border {
+    border: none!important;
+    background: #f7f7f7!important;
+}
+
+.background-color-overlay {
+    background: #ececec !important;
+}
+
+rect.highcharts-background {
+    fill: #f7f7f7;
+}
+
+/* ========== NEW NAV ========== */
+
+a.icon-link.initial.home-node {
+    display: none!important;
+}
+
+.section.logo-section.workspace-navigation-logo {
+    display: none!important;
+}
+
+.workspace-navigation-home {
+    margin-top: 4px!important;
+}
+
+.group-pic-container .type-icon {
+    display: none !important;
+}
+
+body:not(:has(.right-panel.opened)) #main > div > div.workspace.dynamic-width > div.__vuescroll.hasVBar > div.__panel.__hidebar > div > div.scrollable-container > div > div {
+  width: 90%;
+}
+
+/* ========== AI (V3) ========== */
+
+:root{
+--ai-gradient-custom: linear-gradient(white, white) padding-box, linear-gradient(to bottom right, #2567f4 0%, #8e51e7 50%, #eb3f40 100%) border-box;
+
+--ai-gradient-custom-text: linear-gradient(90deg, #2567F4 0%, #8E51E7 50%, #EB4040 100%);
+}
+
+.card-container[data-test="blank-course-creation-card"] .front {
+    background: var(--ai-gradient-custom);
+    border-radius: 8px;
+    border: 3px solid transparent !important;
+    box-shadow: 0px 0px 20px -8px #8e51e7;
+    background-size: 200% 200%;
+    animation: gradientAnimation 2s linear infinite;
+}
+
+.card-container[data-test="ai-generated-course-creation-card"] .front {
+    background: var(--ai-gradient-custom);
+    border-radius: 8px;
+    border: 3px solid transparent !important;
+    box-shadow: 0px 0px 20px -8px #8e51e7;
+    background-size: 200% 200%;
+    animation: gradientAnimation 2s linear infinite;
+}
+
+.course-creation-inline-mini {
+    background: var(--ai-gradient-custom);
+    border-radius: 8px;
+    border: 3px solid transparent !important;
+    box-shadow: 0px 0px 20px -8px #8e51e7;
+    background-size: 200% 200%;
+    animation: gradientAnimation 2s linear infinite;
+}
+
+.create-dropdown {
+    background: var(--ai-gradient-custom);
+    border-radius: 12px;
+    border: 3px solid transparent !important;
+    box-shadow: 0px 0px 20px -8px #8e51e7;
+    background-size: 200% 200%;
+    animation: gradientAnimation 2s linear infinite;
+}
+
+.border-animation-box.ai-assistant-box {
+    background: var(--ai-gradient-custom);
+    border-radius: 8px;
+    border: 3px solid transparent !important;
+    box-shadow: 0px 0px 20px -8px #8e51e7;
+    background-size: 200% 200%;
+    animation: gradientAnimation 2s linear infinite;
+}
+
+a[href="/group/58be7abeccfea012a0ca55c3/settings/aiAssistance"] .fitted-text {
+    background: var(--ai-gradient-custom-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+a[href="/group/58be7abeccfea012a0ca55c3/settings/aiAssistance"] svg {
+    color: #2567F4 !important;
+}
+
+div[data-test="group-settings-aiAssistance"]>a>.fitted-text {
+    background: var(--ai-gradient-custom-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+div[data-test="group-settings-aiAssistance"]>a>div>svg {
+    color: #2567F4 !important;
+}
+
+div[data-test="course-creation-popup-title"] {
+    background: var(--ai-gradient-custom-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+div#standard-recommendedELampTrainings .page-section-title {
+    background: var(--ai-gradient-custom-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+div#standard-recommendedELampTrainings .page-section-title:before {
+    content:"✨ "
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 100% 100%;
+        /* Début de l'animation */
+    }
+
+    50% {
+        background-position: 0 0;
+        /* Milieu de l'animation */
+    }
+
+    100% {
+        background-position: 100% 100%;
+        /* Fin de l'animation */
+    }
+}
+
+/* ==================== */
