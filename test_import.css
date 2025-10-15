@@ -51,8 +51,8 @@ a.icon-link.initial.home-node {
     display: none!important;
 }
 
-.workspace-navigation-home {
-    margin-top: 4px!important;
+.nested-section.home-section {
+    margin-top: 8px !important;
 }
 
 .group-pic-container .type-icon {
