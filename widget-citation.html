@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citation du jour</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .quote-container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quote-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .quote-icon {
+            font-size: 5em;
+            color: #667eea;
+            opacity: 0.15;
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            line-height: 1;
+        }
+
+        .quote-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quote-label {
+            color: #667eea;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
+        .quote-text {
+            font-size: 1.8em;
+            line-height: 1.6;
+            color: #333;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 30px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote-author {
+            text-align: right;
+            font-size: 1.2em;
+            color: #666;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .quote-author::before {
+            content: '—';
+            margin-right: 10px;
+            color: #667eea;
+        }
+
+        .decorative-line {
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin: 25px auto;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .quote-container {
+                padding: 50px 35px;
+            }
+            
+            .quote-text {
+                font-size: 1.4em;
+            }
+            
+            .quote-icon {
+                font-size: 3.5em;
+            }
+            
+            .quote-author {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quote-container">
+        <div class="quote-icon">"</div>
+        
+        <div class="quote-header">
+            <div class="quote-label">✨ Citation</div>
+        </div>
+
+        <div class="decorative-line"></div>
+
+        <div class="quote-text">
+            La seule façon de faire du bon travail est d'aimer ce que vous faites
+        </div>
+
+        <div class="quote-author">
+            Steve Jobs
+        </div>
+    </div>
+</body>
+</html>
