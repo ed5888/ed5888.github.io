@@ -5,6 +5,10 @@
     border-color: #efefef!important;
 }
 
+iframe.iframe-container {
+    border: none;
+}
+
 ::selection {
     background: #4AC994;
     color: black;
@@ -80,7 +84,7 @@ body:not(:has(.right-panel.opened)) #main > div > div.workspace.dynamic-width > 
 --ai-gradient-custom-text: linear-gradient(90deg, #2567F4 0%, #8E51E7 50%, #EB4040 100%);
 }
 
-.card-container[data-test="blank-course-creation-card"] .front {
+div[data-test="new-course-creation-card"] .front {
     background: var(--ai-gradient-custom);
     border-radius: 8px;
     border: 3px solid transparent !important;
@@ -89,7 +93,7 @@ body:not(:has(.right-panel.opened)) #main > div > div.workspace.dynamic-width > 
     animation: gradientAnimation 2s linear infinite;
 }
 
-.card-container[data-test="ai-generated-course-creation-card"] .front {
+.prompt-input-container{
     background: var(--ai-gradient-custom);
     border-radius: 8px;
     border: 3px solid transparent !important;
