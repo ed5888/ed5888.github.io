@@ -1,3 +1,5 @@
+
+
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap');
 
 * {
@@ -36,6 +38,10 @@ div#pendo-base {
 }
 
 /* ========== BORDERS REPLACE BY LIGHT BACKGROUND ========== */
+
+.selector-layout, .toggle-all, .datagrid-row, .user-pic-with-rank, .audience-filters{
+    border: none!important;
+}
 
 .swiper-slide {
     margin-right: 16px!important;
@@ -80,7 +86,6 @@ body:not(:has(.right-panel.opened)) #main > div > div.workspace.dynamic-width > 
 
 :root{
 --ai-gradient-custom: linear-gradient(white, white) padding-box, linear-gradient(to bottom right, #2567f4 0%, #8e51e7 50%, #eb3f40 100%) border-box;
-
 --ai-gradient-custom-text: linear-gradient(90deg, #2567F4 0%, #8E51E7 50%, #EB4040 100%);
 }
 
@@ -183,3 +188,6 @@ div#standard-recommendedELampTrainings .page-section-title:before {
 }
 
 /* ==================== */
+
+
+
