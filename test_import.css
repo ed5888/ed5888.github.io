@@ -1,5 +1,3 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap');
 
 * {
@@ -7,13 +5,9 @@
     border-color: #efefef!important;
 }
 
-iframe.iframe-container {
-    border: none;
-}
-
 ::selection {
-    background: #4AC994;
-    color: black;
+    background: #e3d2f9;
+    color: #5b18b4;
 }
 
 .selector-layout, .toggle-all, .datagrid-row, .user-pic-with-rank, .audience-filters{
@@ -38,10 +32,6 @@ div#pendo-base {
 }
 
 /* ========== BORDERS REPLACE BY LIGHT BACKGROUND ========== */
-
-.selector-layout, .toggle-all, .datagrid-row, .user-pic-with-rank, .audience-filters{
-    border: none!important;
-}
 
 .swiper-slide {
     margin-right: 16px!important;
@@ -86,6 +76,7 @@ body:not(:has(.right-panel.opened)) #main > div > div.workspace.dynamic-width > 
 
 :root{
 --ai-gradient-custom: linear-gradient(white, white) padding-box, linear-gradient(to bottom right, #2567f4 0%, #8e51e7 50%, #eb3f40 100%) border-box;
+
 --ai-gradient-custom-text: linear-gradient(90deg, #2567F4 0%, #8E51E7 50%, #EB4040 100%);
 }
 
@@ -99,6 +90,24 @@ div[data-test="new-course-creation-card"] .front {
 }
 
 .prompt-input-container{
+    background: var(--ai-gradient-custom);
+    border-radius: 8px;
+    border: 3px solid transparent !important;
+    box-shadow: 0px 0px 20px -8px #8e51e7;
+    background-size: 200% 200%;
+    animation: gradientAnimation 2s linear infinite;
+}
+
+.card-container[data-test="blank-course-creation-card"] .front {
+    background: var(--ai-gradient-custom);
+    border-radius: 8px;
+    border: 3px solid transparent !important;
+    box-shadow: 0px 0px 20px -8px #8e51e7;
+    background-size: 200% 200%;
+    animation: gradientAnimation 2s linear infinite;
+}
+
+.card-container[data-test="ai-generated-course-creation-card"] .front {
     background: var(--ai-gradient-custom);
     border-radius: 8px;
     border: 3px solid transparent !important;
@@ -188,6 +197,3 @@ div#standard-recommendedELampTrainings .page-section-title:before {
 }
 
 /* ==================== */
-
-
-
