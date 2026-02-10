@@ -197,3 +197,14 @@ div#standard-recommendedELampTrainings .page-section-title:before {
 }
 
 /* ==================== */
+
+li.message-bubble.ai-message.limited-width {
+    align-self: flex-start;
+    padding: 12px 16px;
+    background-color: #e3d2f9;
+    color: #5b18b4;
+}
+
+li.message-bubble.user-message {
+    max-width: 70%!important;
+}
