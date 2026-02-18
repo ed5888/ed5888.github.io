@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>API & MCP — WORD SHOOTER</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #050508;
+  --g: #00ff41;
+  --r: #ff2222;
+  --y: #ffcc00;
+  --c: #00cfff;
+  --dim: rgba(0,255,65,0.35);
+  --panel: rgba(0,255,65,0.06);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  width:100%; height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  font-family:'Share Tech Mono', monospace;
+  cursor:none;
+  user-select:none;
+}
+
+/* ── CANVAS ARENA ── */
+#arena {
+  position:fixed; inset:0;
+  overflow:hidden;
+}
+
+/* Custom crosshair cursor */
+#cursor {
+  position:fixed;
+  width:40px; height:40px;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+}
+#cursor svg { width:100%; height:100%; }
+
+/* ── SCANLINES ── */
+#arena::after {
+  content:''; position:absolute; inset:0; z-index:50; pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.14) 4px);
+}
+
+/* ── BACKGROUND GRID ── */
+.bg-grid {
+  position:absolute; inset:0; z-index:0;
+  background-image:
+    linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px);
+  background-size:55px 55px;
+  animation:gridMove 25s linear infinite;
+}
+@keyframes gridMove { to { background-position:0 55px; } }
+
+/* ── VIGNETTE ── */
+.vignette {
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.85) 100%);
+}
+
+/* ══════════════════════════
+   SCREENS
+══════════════════════════ */
+.screen { position:absolute; inset:0; z-index:100; display:none; align-items:center; justify-content:center; flex-direction:column; }
+.screen.on { display:flex; }
+
+/* ── START ── */
+#startScreen {
+  background:rgba(5,5,8,0.92);
+  text-align:center;
+  gap:0;
+}
+
+.logo-line {
+  font-family:'Teko', sans-serif;
+  font-size:clamp(60px,12vw,110px);
+  font-weight:700;
+  letter-spacing:6px;
+  line-height:0.9;
+  color:var(--g);
+  text-shadow:0 0 30px rgba(0,255,65,0.5), 0 0 80px rgba(0,255,65,0.15);
+  animation:flicker 6s infinite;
+}
+@keyframes flicker {
+  0%,94%,96%,98%,100%{opacity:1}
+  95%{opacity:.5} 97%{opacity:.8} 99%{opacity:.3}
+}
+
+.logo-sub {
+  font-size:12px;
+  letter-spacing:10px;
+  color:var(--dim);
+  margin-top:6px;
+  margin-bottom:48px;
+  text-transform:uppercase;
+}
+
+.brief {
+  max-width:480px;
+  border:1px solid var(--dim);
+  padding:22px 28px;
+  background:var(--panel);
+  margin-bottom:40px;
+  text-align:left;
+  position:relative;
+}
+.brief::before {
+  content:'MISSION BRIEF';
+  position:absolute; top:-10px; left:20px;
+  font-size:10px; letter-spacing:4px; color:var(--g);
+  background:var(--bg); padding:0 8px;
+}
+.brief p {
+  font-size:13px; line-height:2; color:rgba(255,255,255,0.7);
+}
+.brief p span { color:var(--g); font-weight:700; }
+
+.start-cta {
+  font-family:'Teko', sans-serif;
+  font-size:28px;
+  font-weight:600;
+  letter-spacing:8px;
+  color:var(--bg);
+  background:var(--g);
+  border:none;
+  padding:16px 52px;
+  cursor:none;
+  transition:all 0.15s;
+  clip-path:polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  box-shadow:0 0 30px rgba(0,255,65,0.3);
+}
+.start-cta:hover { transform:scale(1.04); box-shadow:0 0 50px rgba(0,255,65,0.5); }
+
+/* ── END ── */
+#endScreen {
+  background:rgba(5,5,8,0.95);
+  text-align:center;
+  gap:0;
+}
+.end-title {
+  font-family:'Teko',sans-serif;
+  font-size:clamp(50px,10vw,90px);
+  font-weight:700;
+  letter-spacing:4px;
+  color:var(--g);
+  text-shadow:0 0 30px rgba(0,255,65,0.4);
+  margin-bottom:10px;
+}
+.end-score-big {
+  font-family:'Teko',sans-serif;
+  font-size:clamp(80px,16vw,140px);
+  font-weight:700;
+  line-height:1;
+  color:var(--y);
+  text-shadow:0 0 40px rgba(255,204,0,0.4);
+}
+.end-score-lbl { font-size:11px; letter-spacing:5px; color:var(--dim); margin-bottom:36px; }
+.end-stats {
+  display:flex; gap:40px; flex-wrap:wrap;
+  justify-content:center; margin-bottom:36px;
+}
+.e-stat { text-align:center; }
+.e-v { font-family:'Teko',sans-serif; font-size:42px; color:var(--c); }
+.e-l { font-size:10px; letter-spacing:3px; color:var(--dim); display:block; }
+.end-rank {
+  font-size:13px; line-height:2; color:rgba(255,255,255,0.65);
+  max-width:440px; background:var(--panel);
+  border:1px solid var(--dim); padding:18px 26px;
+  border-left:3px solid var(--g); margin-bottom:36px;
+}
+.replay-btn {
+  font-family:'Teko',sans-serif; font-size:22px;
+  letter-spacing:6px; color:var(--g);
+  background:transparent; border:2px solid var(--g);
+  padding:14px 44px; cursor:none; transition:all 0.15s;
+}
+.replay-btn:hover { background:var(--g); color:var(--bg); box-shadow:0 0 30px rgba(0,255,65,0.4); }
+
+/* ══════════════════════════
+   HUD
+══════════════════════════ */
+#hud {
+  position:absolute; inset:0; z-index:60; pointer-events:none;
+}
+
+/* Top bar */
+.hud-top {
+  position:absolute; top:0; left:0; right:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 24px;
+  background:linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+}
+
+.hud-block { text-align:center; }
+.hud-lbl { font-size:9px; letter-spacing:3px; color:var(--dim); display:block; margin-bottom:2px; }
+.hud-val { font-family:'Teko',sans-serif; font-size:32px; color:var(--g); line-height:1; text-shadow:0 0 15px rgba(0,255,65,0.4); }
+.hud-val.red { color:var(--r); text-shadow:0 0 15px rgba(255,34,34,0.4); }
+.hud-val.yellow { color:var(--y); text-shadow:0 0 15px rgba(255,204,0,0.4); }
+
+/* progress bar */
+.hud-prog {
+  position:absolute; top:0; left:0; right:0; height:3px;
+  background:rgba(0,255,65,0.1);
+}
+.hud-prog-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--g), var(--c));
+  transition:width 0.4s ease;
+}
+
+/* Bottom question bar */
+.hud-bottom {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:0 24px 24px;
+  background:linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+}
+.q-counter {
+  font-size:9px; letter-spacing:4px; color:var(--dim);
+  margin-bottom:6px; display:block;
+}
+.q-text {
+  font-family:'Teko',sans-serif; font-size:clamp(20px,3.5vw,32px);
+  font-weight:500; color:var(--w);
+  line-height:1.25;
+  text-shadow:0 2px 20px rgba(0,0,0,0.9);
+  max-width:900px;
+}
+
+/* Timer bar below question */
+.timer-track {
+  margin-top:10px;
+  height:4px;
+  background:rgba(255,255,255,0.1);
+  overflow:hidden;
+}
+.timer-fill {
+  height:100%;
+  background:var(--g);
+  transform-origin:left;
+  transition:background 0.3s;
+}
+
+/* ammo / lives */
+.ammo-row {
+  display:flex; gap:5px; align-items:center;
+  position:absolute; bottom:24px; right:24px;
+}
+.ammo-pip {
+  width:8px; height:20px;
+  background:var(--g);
+  opacity:0.9;
+  transition:all 0.2s;
+}
+.ammo-pip.used { background:var(--r); opacity:0.4; }
+
+/* ══════════════════════════
+   WORD TARGETS
+══════════════════════════ */
+.target {
+  position:absolute;
+  pointer-events:auto;
+  cursor:none;
+  transform:translate(-50%, -50%);
+  transition:transform 0.05s;
+  z-index:40;
+}
+
+.target-inner {
+  position:relative;
+  padding:10px 20px;
+  font-family:'Teko',sans-serif;
+  font-size:clamp(18px,3vw,30px);
+  font-weight:600;
+  letter-spacing:2px;
+  color:rgba(255,255,255,0.92);
+  border:2px solid rgba(255,255,255,0.25);
+  background:rgba(10,10,20,0.75);
+  backdrop-filter:blur(4px);
+  white-space:nowrap;
+  transition:border-color 0.1s, color 0.1s;
+  cursor:none;
+}
+
+/* Crosshair ring around each target (subtle) */
+.target-inner::before {
+  content:'';
+  position:absolute; inset:-6px;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:50%;
+}
+
+.target:hover .target-inner {
+  border-color:var(--y);
+  color:var(--y);
+  text-shadow:0 0 12px rgba(255,204,0,0.5);
+}
+
+/* hit animations */
+.target.hit-correct .target-inner {
+  background:rgba(0,255,65,0.25);
+  border-color:var(--g);
+  color:var(--g);
+  text-shadow:0 0 20px var(--g);
+}
+.target.hit-wrong .target-inner {
+  background:rgba(255,34,34,0.25);
+  border-color:var(--r);
+  color:var(--r);
+  text-shadow:0 0 20px var(--r);
+}
+
+/* floating drift animation — each gets unique */
+.target { animation: drift var(--dur,8s) ease-in-out var(--delay,0s) infinite alternate; }
+@keyframes drift {
+  0%   { top:var(--y0); left:var(--x0); }
+  25%  { top:var(--y1); left:var(--x1); }
+  50%  { top:var(--y2); left:var(--x2); }
+  75%  { top:var(--y3); left:var(--x3); }
+  100% { top:var(--y4); left:var(--x4); }
+}
+
+/* ══════════════════════════
+   EFFECTS
+══════════════════════════ */
+
+/* muzzle flash */
+#flash {
+  position:fixed; inset:0; z-index:200; pointer-events:none;
+  background:rgba(255,255,255,0.12);
+  opacity:0; transition:opacity 0.05s;
+}
+#flash.bang { opacity:1; }
+
+/* hit marker */
+#hitMarker {
+  position:fixed; z-index:9990; pointer-events:none;
+  width:30px; height:30px;
+  transform:translate(-50%,-50%);
+  opacity:0;
+}
+#hitMarker svg { width:100%; height:100%; }
+#hitMarker.show-ok { opacity:1; animation:fadeHit 0.35s ease forwards; }
+#hitMarker.show-ko { opacity:1; animation:fadeHit 0.35s ease forwards; }
+@keyframes fadeHit { to { opacity:0; transform:translate(-50%,-50%) scale(1.5); } }
+
+/* screen shake */
+@keyframes shake {
+  0%,100%{transform:translate(0,0)}
+  20%{transform:translate(-4px,2px)}
+  40%{transform:translate(4px,-3px)}
+  60%{transform:translate(-3px,3px)}
+  80%{transform:translate(3px,-2px)}
+}
+#arena.shaking { animation:shake 0.3s ease; }
+
+/* particle burst */
+.particle {
+  position:fixed; pointer-events:none; z-index:9997;
+  width:6px; height:6px;
+  border-radius:1px;
+  animation:burst var(--dur,0.5s) ease-out forwards;
+}
+@keyframes burst {
+  0%   { transform:translate(0,0) rotate(0deg) scale(1); opacity:1; }
+  100% { transform:translate(var(--tx),var(--ty)) rotate(360deg) scale(0); opacity:0; }
+}
+
+/* feedback text pop */
+.fb-pop {
+  position:fixed; z-index:9995; pointer-events:none;
+  font-family:'Teko',sans-serif; font-size:28px; font-weight:700; letter-spacing:3px;
+  animation:fbFly 0.9s ease forwards;
+  text-shadow:0 0 20px currentColor;
+}
+@keyframes fbFly {
+  0%   { transform:translateY(0) scale(1); opacity:1; }
+  60%  { transform:translateY(-50px) scale(1.1); opacity:1; }
+  100% { transform:translateY(-90px) scale(0.8); opacity:0; }
+}
+
+/* wrong reveal */
+.target.reveal-correct .target-inner {
+  border-color:var(--g);
+  color:var(--g);
+  box-shadow:0 0 20px rgba(0,255,65,0.4);
+  animation:pulse-correct 0.6s ease 3;
+}
+@keyframes pulse-correct { 50%{transform:scale(1.12)} }
+
+/* low time warning */
+@keyframes timerWarn {
+  0%,100%{background:var(--r)}
+  50%{background:rgba(255,0,0,0.4)}
+}
+</style>
+</head>
+<body>
+
+<!-- CROSSHAIR -->
+<div id="cursor">
+  <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- outer circle -->
+    <circle cx="20" cy="20" r="17" stroke="rgba(0,255,65,0.5)" stroke-width="1"/>
+    <!-- center dot -->
+    <circle cx="20" cy="20" r="2" fill="#00ff41"/>
+    <!-- cross lines -->
+    <line x1="20" y1="2"  x2="20" y2="11" stroke="#00ff41" stroke-width="1.5"/>
+    <line x1="20" y1="29" x2="20" y2="38" stroke="#00ff41" stroke-width="1.5"/>
+    <line x1="2"  y1="20" x2="11" y2="20" stroke="#00ff41" stroke-width="1.5"/>
+    <line x1="29" y1="20" x2="38" y2="20" stroke="#00ff41" stroke-width="1.5"/>
+    <!-- tick marks -->
+    <line x1="20" y1="6" x2="20" y2="9" stroke="#00ff41" stroke-width="2"/>
+    <line x1="20" y1="31" x2="20" y2="34" stroke="#00ff41" stroke-width="2"/>
+    <line x1="6"  y1="20" x2="9" y2="20" stroke="#00ff41" stroke-width="2"/>
+    <line x1="31" y1="20" x2="34" y2="20" stroke="#00ff41" stroke-width="2"/>
+  </svg>
+</div>
+
+<!-- MUZZLE FLASH -->
+<div id="flash"></div>
+
+<!-- HIT MARKER -->
+<div id="hitMarker">
+  <svg viewBox="0 0 30 30" fill="none">
+    <line x1="2"  y1="2"  x2="10" y2="10" stroke="#00ff41" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="28" y1="2"  x2="20" y2="10" stroke="#00ff41" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="2"  y1="28" x2="10" y2="20" stroke="#00ff41" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="28" y1="28" x2="20" y2="20" stroke="#00ff41" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<!-- ARENA -->
+<div id="arena">
+  <div class="bg-grid"></div>
+  <div class="vignette"></div>
+
+  <!-- HUD -->
+  <div id="hud" style="display:none">
+    <div class="hud-prog"><div class="hud-prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="hud-top">
+      <div class="hud-block">
+        <span class="hud-lbl">SCORE</span>
+        <span class="hud-val" id="hudScore">0</span>
+      </div>
+      <div class="hud-block">
+        <span class="hud-lbl">ACCURACY</span>
+        <span class="hud-val yellow" id="hudAcc">—</span>
+      </div>
+      <div class="hud-block">
+        <span class="hud-lbl">STREAK</span>
+        <span class="hud-val" id="hudStreak">0</span>
+      </div>
+    </div>
+
+    <div class="hud-bottom">
+      <span class="q-counter" id="qCounter">QUESTION 1 / 10</span>
+      <div class="q-text" id="qText">Loading...</div>
+      <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+    </div>
+
+    <div class="ammo-row" id="ammoRow"></div>
+  </div>
+
+  <!-- Word targets injected here -->
+  <div id="targets"></div>
+</div>
+
+<!-- START SCREEN -->
+<div class="screen on" id="startScreen">
+  <div class="logo-line">WORD<br>SHOOTER</div>
+  <div class="logo-sub">API &amp; MCP · 360Learning</div>
+  <div class="brief">
+    <p>A question appears at the bottom.<br>
+    <span>Shoot the correct word</span> floating on screen.<br>
+    Wrong shots cost you a life. Faster shots = <span>more points</span>.<br>
+    You have <span>3 lives</span> and <span>10 seconds</span> per question.</p>
+  </div>
+  <button class="start-cta" onclick="startGame()">LOAD & FIRE</button>
+</div>
+
+<!-- END SCREEN -->
+<div class="screen" id="endScreen">
+  <div class="end-title" id="endTitle">DEBRIEF</div>
+  <div class="end-score-big" id="endScoreBig">0</div>
+  <div class="end-score-lbl">POINTS</div>
+  <div class="end-stats">
+    <div class="e-stat"><span class="e-v" id="eHits">0</span><span class="e-l">Hits</span></div>
+    <div class="e-stat"><span class="e-v" id="eAcc">0%</span><span class="e-l">Accuracy</span></div>
+    <div class="e-stat"><span class="e-v" id="eStreak">0</span><span class="e-l">Best Streak</span></div>
+    <div class="e-stat"><span class="e-v" id="eSpeed">0ms</span><span class="e-l">Best Shot</span></div>
+  </div>
+  <div class="end-rank" id="endRank"></div>
+  <button class="replay-btn" onclick="startGame()">↺ RELOAD</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// QUESTION BANK
+// ══════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    q: "The API is mainly designed for...",
+    correct: "DEVELOPERS",
+    decoys: ["AI AGENTS", "CLIENTS", "USERS", "CHATBOTS"]
+  },
+  {
+    q: "In the restaurant metaphor, the API plays the role of the...",
+    correct: "WAITER",
+    decoys: ["KITCHEN", "CUSTOMER", "CHEF", "MENU"]
+  },
+  {
+    q: "The MCP is designed for external...",
+    correct: "AI AGENTS",
+    decoys: ["DEVELOPERS", "ADMINS", "WEBHOOKS", "DATABASES"]
+  },
+  {
+    q: "The MCP uses ______-driven logic (vs deterministic for API).",
+    correct: "INTENT",
+    decoys: ["CODE", "RULE", "DATA", "RANDOM"]
+  },
+  {
+    q: "In 360Learning, the MCP lets an agent create a learning path using...",
+    correct: "NATURAL LANGUAGE",
+    decoys: ["JSON", "SQL", "REST CALLS", "WEBHOOKS"]
+  },
+  {
+    q: "The MCP _______ the API — it sits on top of it.",
+    correct: "COMPLEMENTS",
+    decoys: ["REPLACES", "DELETES", "COPIES", "BLOCKS"]
+  },
+  {
+    q: "Figma, Notion, Spotify — they inspired the concept of...",
+    correct: "MCP",
+    decoys: ["REST API", "WEBHOOK", "SDK", "OAUTH"]
+  },
+  {
+    q: "With MCP, 360Learning becomes an AI-_______ platform.",
+    correct: "ACTIONABLE",
+    decoys: ["READABLE", "LOCKABLE", "VIEWABLE", "SORTABLE"]
+  },
+  {
+    q: "The API requires custom _______ to trigger actions.",
+    correct: "CODE",
+    decoys: ["PROMPTS", "CLICKS", "VOICE", "AGENTS"]
+  },
+  {
+    q: "The best discovery question probes a client's _______ roadmap.",
+    correct: "AI",
+    decoys: ["BUDGET", "TRAINING", "LEGAL", "IT"]
+  },
+];
+
+// ══════════════════════════════════════════════
+// GAME STATE
+// ══════════════════════════════════════════════
+let idx = 0, score = 0, streak = 0, bestStreak = 0;
+let lives = 3, shots = 0, hits = 0;
+let bestShotMs = Infinity;
+let questionStart = 0;
+let timerInterval = null, timerSecs = 10;
+let currentQ = null;
+let answered = false;
+
+// ══════════════════════════════════════════════
+// CURSOR
+// ══════════════════════════════════════════════
+const cursorEl = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursorEl.style.left = e.clientX + 'px';
+  cursorEl.style.top  = e.clientY + 'px';
+});
+
+// ══════════════════════════════════════════════
+// START
+// ══════════════════════════════════════════════
+function startGame() {
+  idx=0; score=0; streak=0; bestStreak=0;
+  lives=3; shots=0; hits=0; bestShotMs=Infinity; answered=false;
+  clearInterval(timerInterval);
+  show('');
+  document.getElementById('hud').style.display='block';
+  updateHUD();
+  buildAmmo();
+  loadQuestion();
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  if(id) document.getElementById(id).classList.add('on');
+}
+
+// ══════════════════════════════════════════════
+// HUD
+// ══════════════════════════════════════════════
+function updateHUD() {
+  document.getElementById('hudScore').textContent = score;
+  document.getElementById('hudStreak').textContent = streak >= 3 ? streak + '🔥' : streak;
+  const total = shots;
+  document.getElementById('hudAcc').textContent = total > 0 ? Math.round(hits/total*100)+'%' : '—';
+  document.getElementById('progFill').style.width = (idx / QUESTIONS.length * 100) + '%';
+}
+
+function buildAmmo() {
+  const row = document.getElementById('ammoRow');
+  row.innerHTML = '';
+  for(let i=0; i<3; i++) {
+    const pip = document.createElement('div');
+    pip.className = 'ammo-pip' + (i >= lives ? ' used' : '');
+    pip.id = 'pip'+i;
+    row.appendChild(pip);
+  }
+}
+
+function updateAmmo() {
+  for(let i=0; i<3; i++) {
+    const pip = document.getElementById('pip'+i);
+    if(pip) pip.className = 'ammo-pip' + (i >= lives ? ' used' : '');
+  }
+}
+
+// ══════════════════════════════════════════════
+// QUESTION
+// ══════════════════════════════════════════════
+function loadQuestion() {
+  if(idx >= QUESTIONS.length) { endGame(); return; }
+  clearInterval(timerInterval);
+  answered = false;
+  currentQ = QUESTIONS[idx];
+
+  document.getElementById('qCounter').textContent = `QUESTION ${idx+1} / ${QUESTIONS.length}`;
+  document.getElementById('qText').textContent = currentQ.q;
+
+  spawnTargets(currentQ);
+  startTimer();
+  questionStart = Date.now();
+  updateHUD();
+}
+
+// ══════════════════════════════════════════════
+// TARGETS
+// ══════════════════════════════════════════════
+function spawnTargets(q) {
+  const container = document.getElementById('targets');
+  container.innerHTML = '';
+
+  // Pick 3 random decoys
+  const shuffled = [...q.decoys].sort(() => Math.random() - 0.5);
+  const chosen = shuffled.slice(0, 3);
+  const words = [...chosen, q.correct].sort(() => Math.random() - 0.5);
+
+  // Define safe zone: avoid bottom 160px (question area) and top 70px (HUD)
+  const W = window.innerWidth, H = window.innerHeight;
+  const PAD = 120, TOP = 90, BOT = 180;
+  const usableW = W - PAD*2, usableH = H - TOP - BOT;
+
+  // Place words in a grid to avoid overlap
+  const cols = 2, rows = 2;
+  const cellW = usableW / cols, cellH = usableH / rows;
+
+  const positions = [];
+  for(let r=0; r<rows; r++) {
+    for(let c=0; c<cols; c++) {
+      positions.push({
+        x: PAD + c*cellW + cellW*0.2 + Math.random()*cellW*0.6,
+        y: TOP  + r*cellH + cellH*0.2 + Math.random()*cellH*0.6
+      });
+    }
+  }
+  positions.sort(() => Math.random() - 0.5);
+
+  words.forEach((word, i) => {
+    const pos = positions[i];
+    const el = document.createElement('div');
+    el.className = 'target';
+    el.innerHTML = `<div class="target-inner">${word}</div>`;
+
+    // Generate drift waypoints near spawn position
+    const driftRange = 80;
+    const pts = Array.from({length:5}, () => ({
+      x: Math.max(PAD, Math.min(W-PAD, pos.x + (Math.random()-0.5)*driftRange*2)),
+      y: Math.max(TOP,  Math.min(H-BOT, pos.y + (Math.random()-0.5)*driftRange*2))
+    }));
+
+    el.style.setProperty('--x0', pts[0].x+'px');
+    el.style.setProperty('--y0', pts[0].y+'px');
+    el.style.setProperty('--x1', pts[1].x+'px');
+    el.style.setProperty('--y1', pts[1].y+'px');
+    el.style.setProperty('--x2', pts[2].x+'px');
+    el.style.setProperty('--y2', pts[2].y+'px');
+    el.style.setProperty('--x3', pts[3].x+'px');
+    el.style.setProperty('--y3', pts[3].y+'px');
+    el.style.setProperty('--x4', pts[4].x+'px');
+    el.style.setProperty('--y4', pts[4].y+'px');
+    el.style.setProperty('--dur', (6 + Math.random()*6) + 's');
+    el.style.setProperty('--delay', (-Math.random()*6) + 's');
+
+    el.style.left = pos.x + 'px';
+    el.style.top  = pos.y + 'px';
+
+    const isCorrect = word === q.correct;
+    el.addEventListener('click', (e) => onShot(e, el, isCorrect, word));
+    container.appendChild(el);
+  });
+}
+
+// ══════════════════════════════════════════════
+// SHOOTING
+// ══════════════════════════════════════════════
+function onShot(e, el, isCorrect, word) {
+  if(answered) return;
+  e.stopPropagation();
+
+  shots++;
+  muzzleFlash();
+  showHitMarker(e.clientX, e.clientY, isCorrect);
+  spawnParticles(e.clientX, e.clientY, isCorrect);
+
+  if(isCorrect) {
+    answered = true;
+    clearInterval(timerInterval);
+    hits++;
+    streak++;
+    if(streak > bestStreak) bestStreak = streak;
+    const elapsed = Date.now() - questionStart;
+    if(elapsed < bestShotMs) bestShotMs = elapsed;
+
+    // Score: base 100 + time bonus
+    const timeBonus = Math.max(0, Math.round((timerSecs / 10) * 150));
+    const streakBonus = streak >= 3 ? 50 : 0;
+    const pts = 100 + timeBonus + streakBonus;
+    score += pts;
+
+    el.classList.add('hit-correct');
+    popText('+' + pts, e.clientX, e.clientY, '#00ff41');
+
+    // Disable all targets
+    disableTargets();
+    updateHUD();
+
+    setTimeout(() => nextQuestion(), 900);
+
+  } else {
+    // wrong shot
+    lives = Math.max(0, lives - 1);
+    streak = 0;
+    el.classList.add('hit-wrong');
+    popText('MISS!', e.clientX, e.clientY, '#ff2222');
+    shake();
+    updateAmmo();
+    updateHUD();
+
+    if(lives <= 0) {
+      answered = true;
+      clearInterval(timerInterval);
+      disableTargets();
+      revealCorrect();
+      setTimeout(() => endGame(), 1200);
+    } else {
+      setTimeout(() => el.classList.remove('hit-wrong'), 500);
+    }
+  }
+}
+
+function disableTargets() {
+  document.querySelectorAll('.target').forEach(t => {
+    t.style.pointerEvents = 'none';
+    t.style.animation = 'none';
+  });
+}
+
+function revealCorrect() {
+  document.querySelectorAll('.target').forEach(t => {
+    const txt = t.querySelector('.target-inner').textContent.trim();
+    if(txt === currentQ.correct) t.classList.add('reveal-correct');
+  });
+}
+
+// ══════════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════════
+function startTimer() {
+  timerSecs = 10;
+  const fill = document.getElementById('timerFill');
+  fill.style.transition = 'none';
+  fill.style.width = '100%';
+  fill.style.background = 'var(--g)';
+
+  setTimeout(() => {
+    fill.style.transition = 'width 10s linear, background 3s linear 7s';
+    fill.style.width = '0%';
+    fill.style.background = 'var(--r)';
+  }, 50);
+
+  timerInterval = setInterval(() => {
+    timerSecs -= 0.1;
+    if(timerSecs <= 0) {
+      clearInterval(timerInterval);
+      if(!answered) {
+        answered = true;
+        lives = Math.max(0, lives - 1);
+        streak = 0;
+        updateAmmo();
+        updateHUD();
+        popText('TIME UP!', window.innerWidth/2, window.innerHeight/2 - 80, '#ffcc00');
+        revealCorrect();
+        disableTargets();
+        if(lives <= 0) {
+          setTimeout(() => endGame(), 1200);
+        } else {
+          setTimeout(() => nextQuestion(), 1200);
+        }
+      }
+    }
+  }, 100);
+}
+
+function nextQuestion() {
+  idx++;
+  loadQuestion();
+}
+
+// ══════════════════════════════════════════════
+// EFFECTS
+// ══════════════════════════════════════════════
+function muzzleFlash() {
+  const f = document.getElementById('flash');
+  f.classList.add('bang');
+  setTimeout(() => f.classList.remove('bang'), 60);
+}
+
+function showHitMarker(x, y, ok) {
+  const hm = document.getElementById('hitMarker');
+  hm.style.left = x+'px'; hm.style.top = y+'px';
+  hm.querySelector('svg').querySelector('line,line').setAttribute('stroke', ok ? '#00ff41' : '#ff2222');
+  hm.querySelectorAll('line').forEach(l => l.setAttribute('stroke', ok ? '#00ff41' : '#ff2222'));
+  hm.className = ok ? 'show-ok' : 'show-ko';
+  setTimeout(() => hm.className = '', 400);
+}
+
+function spawnParticles(x, y, ok) {
+  const color = ok ? '#00ff41' : '#ff2222';
+  const count = ok ? 14 : 8;
+  for(let i=0; i<count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const angle = (Math.PI * 2 / count) * i + Math.random()*0.5;
+    const dist = 40 + Math.random()*80;
+    p.style.left = x+'px'; p.style.top = y+'px';
+    p.style.background = color;
+    p.style.setProperty('--tx', Math.cos(angle)*dist+'px');
+    p.style.setProperty('--ty', Math.sin(angle)*dist+'px');
+    p.style.setProperty('--dur', (0.3+Math.random()*0.4)+'s');
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 800);
+  }
+}
+
+function popText(text, x, y, color) {
+  const el = document.createElement('div');
+  el.className = 'fb-pop';
+  el.textContent = text;
+  el.style.color = color;
+  el.style.left = (x-40)+'px';
+  el.style.top  = (y-30)+'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+function shake() {
+  const arena = document.getElementById('arena');
+  arena.classList.add('shaking');
+  setTimeout(() => arena.classList.remove('shaking'), 350);
+}
+
+// ══════════════════════════════════════════════
+// END
+// ══════════════════════════════════════════════
+function endGame() {
+  clearInterval(timerInterval);
+  document.getElementById('hud').style.display = 'none';
+  document.getElementById('targets').innerHTML = '';
+
+  document.getElementById('endScoreBig').textContent = score;
+  document.getElementById('eHits').textContent = hits + '/' + QUESTIONS.length;
+  document.getElementById('eAcc').textContent = shots > 0 ? Math.round(hits/shots*100)+'%' : '0%';
+  document.getElementById('eStreak').textContent = bestStreak + (bestStreak >= 3 ? '🔥' : '');
+  document.getElementById('eSpeed').textContent = bestShotMs < Infinity ? bestShotMs + 'ms' : '—';
+
+  const pct = hits / QUESTIONS.length;
+  let title, msg;
+  if(pct >= 0.9)       { title='ELITE SHOOTER'; msg='🎯 Flawless. You\'ve fully internalized API vs MCP. Ready to answer any client question without hesitation.'; }
+  else if(pct >= 0.7)  { title='SHARPSHOOTER'; msg:'⚡ Very strong. A couple of concepts to polish — revisit the MCP positioning and client pitch before your next call.'; msg='⚡ Very strong. Revisit the MCP positioning statement before your next client call.'; }
+  else if(pct >= 0.5)  { title='ON TARGET'; msg='👍 Solid foundation. Re-read the API vs MCP comparison table and try again for a perfect score.'; }
+  else                 { title='RESPAWN'; msg='💡 The concepts need more drilling. Re-read the Confluence page then reload — it clicks faster on round 2.'; }
+
+  document.getElementById('endTitle').textContent = title;
+  document.getElementById('endRank').textContent = msg;
+  show('endScreen');
+}
+</script>
+</body>
+</html>
