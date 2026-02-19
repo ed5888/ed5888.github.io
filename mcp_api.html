@@ -96,7 +96,7 @@ html, body {
 }
 
 .logo-sub {
-  font-size:24px;
+  font-size:12px;
   letter-spacing:10px;
   color:var(--dim);
   margin-top:6px;
@@ -116,11 +116,11 @@ html, body {
 .brief::before {
   content:'MISSION BRIEF';
   position:absolute; top:-10px; left:20px;
-  font-size:14px; letter-spacing:4px; color:var(--g);
+  font-size:10px; letter-spacing:4px; color:var(--g);
   background:var(--bg); padding:0 8px;
 }
 .brief p {
-  font-size:15px; line-height:2; color:rgba(255,255,255,0.7);
+  font-size:13px; line-height:2; color:rgba(255,255,255,0.7);
 }
 .brief p span { color:var(--g); font-weight:700; }
 
@@ -163,16 +163,16 @@ html, body {
   color:var(--y);
   text-shadow:0 0 40px rgba(255,204,0,0.4);
 }
-.end-score-lbl { font-size:14px; letter-spacing:5px; color:var(--dim); margin-bottom:36px; }
+.end-score-lbl { font-size:11px; letter-spacing:5px; color:var(--dim); margin-bottom:36px; }
 .end-stats {
   display:flex; gap:40px; flex-wrap:wrap;
   justify-content:center; margin-bottom:36px;
 }
 .e-stat { text-align:center; }
 .e-v { font-family:'Teko',sans-serif; font-size:42px; color:var(--c); }
-.e-l { font-size:14px; letter-spacing:3px; color:var(--dim); display:block; }
+.e-l { font-size:10px; letter-spacing:3px; color:var(--dim); display:block; }
 .end-rank {
-  font-size:15px; line-height:2; color:rgba(255,255,255,0.65);
+  font-size:13px; line-height:2; color:rgba(255,255,255,0.65);
   max-width:440px; background:var(--panel);
   border:1px solid var(--dim); padding:18px 26px;
   border-left:3px solid var(--g); margin-bottom:36px;
@@ -201,7 +201,7 @@ html, body {
 }
 
 .hud-block { text-align:center; }
-.hud-lbl { font-size:14px; letter-spacing:3px; color:var(--dim); display:block; margin-bottom:2px; }
+.hud-lbl { font-size:9px; letter-spacing:3px; color:var(--dim); display:block; margin-bottom:2px; }
 .hud-val { font-family:'Teko',sans-serif; font-size:32px; color:var(--g); line-height:1; text-shadow:0 0 15px rgba(0,255,65,0.4); }
 .hud-val.red { color:var(--r); text-shadow:0 0 15px rgba(255,34,34,0.4); }
 .hud-val.yellow { color:var(--y); text-shadow:0 0 15px rgba(255,204,0,0.4); }
@@ -224,12 +224,12 @@ html, body {
   background:linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
 }
 .q-counter {
-  font-size:14px; letter-spacing:4px; color:var(--dim);
+  font-size:9px; letter-spacing:4px; color:var(--dim);
   margin-bottom:6px; display:block;
 }
 .q-text {
   font-family:'Teko',sans-serif; font-size:clamp(20px,3.5vw,32px);
-  font-weight:500; color: white;
+  font-weight:500; color:var(--w);
   line-height:1.25;
   text-shadow:0 2px 20px rgba(0,0,0,0.9);
   max-width:900px;
@@ -504,6 +504,179 @@ html, body {
 
 <script>
 // ══════════════════════════════════════════════
+// AUDIO ENGINE — Web Audio API (no files needed)
+// ══════════════════════════════════════════════
+let audioCtx = null;
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+// Master volume helper
+function masterGain(ctx, vol = 0.5) {
+  const g = ctx.createGain();
+  g.gain.value = vol;
+  g.connect(ctx.destination);
+  return g;
+}
+
+// 🔫 GUNSHOT — sharp crack with low thump
+function sndGunshot() {
+  const ctx = getAudio();
+  const out = masterGain(ctx, 0.7);
+
+  // White noise burst (crack)
+  const bufLen = ctx.sampleRate * 0.12;
+  const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufLen, 3);
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const noiseFilter = ctx.createBiquadFilter();
+  noiseFilter.type = 'bandpass';
+  noiseFilter.frequency.value = 1800;
+  noiseFilter.Q.value = 0.8;
+  noise.connect(noiseFilter);
+  noiseFilter.connect(out);
+  noise.start();
+
+  // Low thump
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(180, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.12);
+  env.gain.setValueAtTime(1, ctx.currentTime);
+  env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+  osc.connect(env);
+  env.connect(out);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.15);
+}
+
+// ✅ HIT CORRECT — bright ping + ascending chime
+function sndHit() {
+  const ctx = getAudio();
+  const out = masterGain(ctx, 0.5);
+
+  [0, 0.06, 0.12].forEach((delay, i) => {
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+    osc.type = 'sine';
+    const freqs = [660, 880, 1100];
+    osc.frequency.value = freqs[i];
+    env.gain.setValueAtTime(0.6, ctx.currentTime + delay);
+    env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.3);
+    osc.connect(env);
+    env.connect(out);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + 0.3);
+  });
+}
+
+// ❌ MISS / WRONG — harsh buzz descend
+function sndMiss() {
+  const ctx = getAudio();
+  const out = masterGain(ctx, 0.45);
+
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(320, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.25);
+  env.gain.setValueAtTime(0.8, ctx.currentTime);
+  env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+  osc.connect(env);
+  env.connect(out);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.3);
+
+  // distortion crunch
+  const osc2 = ctx.createOscillator();
+  const env2 = ctx.createGain();
+  osc2.type = 'square';
+  osc2.frequency.setValueAtTime(160, ctx.currentTime);
+  osc2.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.2);
+  env2.gain.setValueAtTime(0.4, ctx.currentTime);
+  env2.exponentialRampToValueAtTime = () => {};
+  env2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+  osc2.connect(env2);
+  env2.connect(out);
+  osc2.start();
+  osc2.stop(ctx.currentTime + 0.25);
+}
+
+// ⏱️ TIMER TICK — dry click for last 3 seconds
+function sndTick() {
+  const ctx = getAudio();
+  const out = masterGain(ctx, 0.35);
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = 'square';
+  osc.frequency.value = 1200;
+  env.gain.setValueAtTime(0.4, ctx.currentTime);
+  env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+  osc.connect(env);
+  env.connect(out);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.05);
+}
+
+// ⏰ TIME UP — flat klaxon
+function sndTimeUp() {
+  const ctx = getAudio();
+  const out = masterGain(ctx, 0.5);
+  [0, 0.18, 0.36].forEach(d => {
+    const o = ctx.createOscillator();
+    const e = ctx.createGain();
+    o.type = 'square';
+    o.frequency.value = 220;
+    e.gain.setValueAtTime(0.6, ctx.currentTime + d);
+    e.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d + 0.14);
+    o.connect(e); e.connect(out);
+    o.start(ctx.currentTime + d);
+    o.stop(ctx.currentTime + d + 0.15);
+  });
+}
+
+// 🏆 VICTORY — ascending fanfare
+function sndVictory() {
+  const ctx = getAudio();
+  const out = masterGain(ctx, 0.45);
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((freq, i) => {
+    const o = ctx.createOscillator();
+    const e = ctx.createGain();
+    o.type = 'triangle';
+    o.frequency.value = freq;
+    const t = ctx.currentTime + i * 0.13;
+    e.gain.setValueAtTime(0.5, t);
+    e.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    o.connect(e); e.connect(out);
+    o.start(t); o.stop(t + 0.45);
+  });
+}
+
+// 💀 GAME OVER — descending doom chord
+function sndGameOver() {
+  const ctx = getAudio();
+  const out = masterGain(ctx, 0.45);
+  const notes = [392, 311, 261, 196];
+  notes.forEach((freq, i) => {
+    const o = ctx.createOscillator();
+    const e = ctx.createGain();
+    o.type = 'sawtooth';
+    o.frequency.value = freq;
+    const t = ctx.currentTime + i * 0.18;
+    e.gain.setValueAtTime(0.5, t);
+    e.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    o.connect(e); e.connect(out);
+    o.start(t); o.stop(t + 0.55);
+  });
+}
+
+// ══════════════════════════════════════════════
 // QUESTION BANK
 // ══════════════════════════════════════════════
 const QUESTIONS = [
@@ -553,9 +726,9 @@ const QUESTIONS = [
     decoys: ["PROMPTS", "CLICKS", "VOICE", "AGENTS"]
   },
   {
-    q: "The best discovery question probes a client's _______.",
-    correct: "AI ROADMAP",
-    decoys: ["BUDGET", "TRAINING", "LEGAL", "IT ROADMAP"]
+    q: "The best discovery question probes a client's _______ roadmap.",
+    correct: "AI",
+    decoys: ["BUDGET", "TRAINING", "LEGAL", "IT"]
   },
 ];
 
@@ -720,11 +893,13 @@ function onShot(e, el, isCorrect, word) {
   e.stopPropagation();
 
   shots++;
+  sndGunshot();
   muzzleFlash();
   showHitMarker(e.clientX, e.clientY, isCorrect);
   spawnParticles(e.clientX, e.clientY, isCorrect);
 
   if(isCorrect) {
+    setTimeout(() => sndHit(), 60);
     answered = true;
     clearInterval(timerInterval);
     hits++;
@@ -750,6 +925,7 @@ function onShot(e, el, isCorrect, word) {
 
   } else {
     // wrong shot
+    setTimeout(() => sndMiss(), 40);
     lives = Math.max(0, lives - 1);
     streak = 0;
     el.classList.add('hit-wrong');
@@ -802,10 +978,15 @@ function startTimer() {
 
   timerInterval = setInterval(() => {
     timerSecs -= 0.1;
+    // Tick sound in last 3 seconds
+    if(timerSecs <= 3 && !answered && Math.round(timerSecs * 10) % 10 === 0) {
+      sndTick();
+    }
     if(timerSecs <= 0) {
       clearInterval(timerInterval);
       if(!answered) {
         answered = true;
+        sndTimeUp();
         lives = Math.max(0, lives - 1);
         streak = 0;
         updateAmmo();
@@ -897,10 +1078,10 @@ function endGame() {
 
   const pct = hits / QUESTIONS.length;
   let title, msg;
-  if(pct >= 0.95)       { title='ELITE SHOOTER'; msg='🎯 Flawless. You\'ve fully internalized API vs MCP. Ready to answer any client question without hesitation.'; }
-  else if(pct >= 0.7)  { title='SHARPSHOOTER'; msg:'⚡ Very strong. A couple of concepts to polish — revisit the MCP positioning and client pitch before your next call.'; msg='⚡ Very strong. Revisit the MCP positioning statement before your next client call.'; }
-  else if(pct >= 0.5)  { title='ON TARGET'; msg='👍 Solid foundation. Re-read the API vs MCP comparison table and try again for a perfect score.'; }
-  else                 { title='RESPAWN'; msg='💡 The concepts need more drilling. Re-read the course then reload — it clicks faster on round 2.'; }
+  if(pct >= 0.9)       { title='ELITE SHOOTER'; msg='🎯 Flawless. You\'ve fully internalized API vs MCP. Ready to answer any client question without hesitation.'; sndVictory(); }
+  else if(pct >= 0.7)  { title='SHARPSHOOTER'; msg='⚡ Very strong. Revisit the MCP positioning statement before your next client call.'; sndVictory(); }
+  else if(pct >= 0.5)  { title='ON TARGET'; msg='👍 Solid foundation. Re-read the API vs MCP comparison table and try again for a perfect score.'; sndGameOver(); }
+  else                 { title='RESPAWN'; msg='💡 The concepts need more drilling. Re-read the Confluence page then reload — it clicks faster on round 2.'; sndGameOver(); }
 
   document.getElementById('endTitle').textContent = title;
   document.getElementById('endRank').textContent = msg;
