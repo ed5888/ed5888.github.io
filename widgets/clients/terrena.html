@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cutter Sous-Vide — Activité d'apprentissage</title>
+<title>Ligne à Nems — Activité d'apprentissage</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -12,11 +13,11 @@
     --steel-light: #2e3650;
     --accent: #e8a020;
     --accent-bright: #f5b830;
-    --danger: #e05555;
-    --safe: #4caf7d;
+    --safe: #2E7D32;
+    --safe-light: #4caf50;
     --text: #e8ecf5;
     --text-dim: #8892a8;
-    --panel: rgba(30,36,55,0.97);
+    --panel: rgba(22,27,42,0.98);
     --glow: rgba(232,160,32,0.25);
   }
 
@@ -25,83 +26,98 @@
   html, body {
     height: 100%;
     overflow: hidden;
+    background: #0f1119;
   }
 
   body {
-    background: var(--steel);
-    color: var(--text);
     font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 100vh;
+  }
+
+  /* Square container — uses the smaller of vw/vh */
+  .square {
+    width: min(100vw, 100vh);
+    height: min(100vw, 100vh);
+    background: var(--steel);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
   }
 
-  /* Background texture */
-  body::before {
+  /* Background glow */
+  .square::before {
     content: '';
-    position: fixed;
+    position: absolute;
     inset: 0;
-    background: 
-      radial-gradient(ellipse at 20% 50%, rgba(232,160,32,0.05) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(76,175,125,0.04) 0%, transparent 50%);
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(232,160,32,0.06) 0%, transparent 55%),
+      radial-gradient(ellipse at 75% 70%, rgba(46,125,50,0.04) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
   }
 
+  /* ── HEADER ── */
   header {
     position: relative;
     z-index: 10;
-    padding: 12px 36px;
-    border-bottom: 1px solid rgba(232,160,32,0.2);
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 20px;
-    background: rgba(20,24,36,0.9);
-    backdrop-filter: blur(10px);
-  flex-shrink: 0;
+    gap: 14px;
+    padding: 8px 18px;
+    background: rgba(15,17,25,0.9);
+    border-bottom: 1px solid rgba(232,160,32,0.2);
   }
 
   .badge {
     background: var(--accent);
     color: var(--steel);
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 2px;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 2px;
+    flex-shrink: 0;
   }
 
-  header h1 {
+  .header-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
+    font-size: 20px;
     letter-spacing: 3px;
     color: var(--text);
+    line-height: 1;
   }
 
-  header p {
-    font-size: 13px;
+  .header-sub {
+    font-size: 10px;
     color: var(--text-dim);
-    margin-top: 2px;
     font-weight: 300;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .progress-bar {
     margin-left: auto;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    flex-shrink: 0;
   }
 
   .progress-label {
     font-family: 'DM Mono', monospace;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--accent);
   }
 
   .progress-track {
-    width: 120px;
-    height: 4px;
+    width: 80px;
+    height: 3px;
     background: var(--steel-light);
     border-radius: 2px;
     overflow: hidden;
@@ -115,45 +131,48 @@
     width: 0%;
   }
 
-  /* Main layout */
-  .main {
+  /* ── BODY: image top, panel bottom ── */
+  .body {
     position: relative;
     z-index: 1;
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 0;
     flex: 1;
-    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
   }
 
-  /* Image zone */
+  /* ── IMAGE ZONE ── */
   .image-zone {
-    overflow: hidden;
     position: relative;
-    padding: 40px;
+    flex: 0 0 58%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .machine-wrapper {
+    position: relative;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .machine-wrapper {
-    position: relative;
-    display: inline-block;
-    max-width: 700px;
-    width: 100%;
-  }
-
   .machine-img {
-    width: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
     height: auto;
     display: block;
-    border-radius: 4px;
-    filter: drop-shadow(0 20px 60px rgba(0,0,0,0.6));
+    filter: drop-shadow(0 8px 30px rgba(0,0,0,0.7));
     user-select: none;
     -webkit-user-drag: none;
   }
 
-  /* Hotspots */
+  /* ── HOTSPOTS ── */
   .hotspot {
     position: absolute;
     transform: translate(-50%, -50%);
@@ -162,11 +181,11 @@
   }
 
   .hotspot-ring {
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: rgba(232,160,32,0.15);
-    border: 2px solid var(--accent);
+    border: 1.5px solid var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -177,24 +196,15 @@
   .hotspot-ring::before {
     content: '';
     position: absolute;
-    inset: -6px;
+    inset: -5px;
     border-radius: 50%;
-    border: 1.5px solid rgba(232,160,32,0.3);
+    border: 1px solid rgba(232,160,32,0.3);
     animation: pulse-ring 2s infinite;
-  }
-
-  .hotspot-ring::after {
-    content: '';
-    position: absolute;
-    inset: -12px;
-    border-radius: 50%;
-    border: 1px solid rgba(232,160,32,0.1);
-    animation: pulse-ring 2s infinite 0.4s;
   }
 
   .hotspot-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 15px;
+    font-size: 12px;
     color: var(--accent);
     line-height: 1;
   }
@@ -203,179 +213,111 @@
   .hotspot.active .hotspot-ring {
     background: rgba(232,160,32,0.3);
     border-color: var(--accent-bright);
-    transform: scale(1.15);
-    box-shadow: 0 0 20px var(--glow);
+    transform: scale(1.2);
+    box-shadow: 0 0 14px var(--glow);
   }
 
-  .hotspot.active .hotspot-ring {
-    background: var(--accent);
-  }
-
-  .hotspot.active .hotspot-num {
-    color: var(--steel);
-  }
+  .hotspot.active .hotspot-ring { background: var(--accent); }
+  .hotspot.active .hotspot-num { color: var(--steel); }
 
   .hotspot.discovered .hotspot-ring {
-    border-color: var(--safe);
-    background: rgba(76,175,125,0.1);
+    border-color: var(--safe-light);
+    background: rgba(46,125,50,0.15);
   }
-
-  .hotspot.discovered .hotspot-num {
-    color: var(--safe);
-  }
-
-  .hotspot.discovered.active .hotspot-ring {
-    background: var(--safe);
-  }
-
-  .hotspot.discovered.active .hotspot-num {
-    color: white;
-  }
+  .hotspot.discovered .hotspot-num { color: var(--safe-light); }
+  .hotspot.discovered.active .hotspot-ring { background: var(--safe); }
+  .hotspot.discovered.active .hotspot-num { color: #fff; }
 
   @keyframes pulse-ring {
-    0% { transform: scale(1); opacity: 0.6; }
-    50% { transform: scale(1.1); opacity: 0.3; }
-    100% { transform: scale(1); opacity: 0.6; }
+    0%   { transform: scale(1);   opacity: 0.6; }
+    50%  { transform: scale(1.12); opacity: 0.2; }
+    100% { transform: scale(1);   opacity: 0.6; }
   }
 
-  /* Connector lines */
-  .connector {
-    position: absolute;
-    pointer-events: none;
-    z-index: 15;
-  }
-
-  /* Side panel */
-  .side-panel {
-    background: var(--panel);
-    border-left: 1px solid rgba(255,255,255,0.06);
+  /* ── BOTTOM PANEL ── */
+  .bottom-panel {
+    flex: 1;
+    min-height: 0;
     display: flex;
-    flex-direction: column;
-    height: 100%;
+    flex-direction: row;
     overflow: hidden;
   }
 
-  .panel-header {
-    padding: 14px 28px 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    background: rgba(20,24,36,0.5);
-  }
-
-  .panel-header h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 2px;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-  }
-
-  .panel-instruction {
-    font-size: 13px;
-    color: var(--text-dim);
-    line-height: 1.5;
-  }
-
-  .panel-instruction strong {
-    color: var(--accent);
-  }
-
-  /* Info card */
-  .info-card {
+  /* Info pane */
+  .info-pane {
     flex: 1;
-    min-height: 0;
-    padding: 20px 28px;
+    min-width: 0;
+    padding: 12px 16px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(255,255,255,0.05);
     display: flex;
     flex-direction: column;
-    gap: 0;
-    overflow-y: auto;
+    gap: 8px;
   }
 
   .card-placeholder {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex: 1;
-    gap: 16px;
-    opacity: 0.4;
+    gap: 8px;
+    opacity: 0.35;
     text-align: center;
   }
 
   .placeholder-icon {
-    width: 60px;
-    height: 60px;
-    border: 2px dashed var(--text-dim);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .card-content {
     display: none;
     flex-direction: column;
-    gap: 20px;
-    animation: slide-in 0.3s ease;
+    gap: 8px;
+    animation: slide-in 0.25s ease;
   }
 
-  .card-content.visible {
-    display: flex;
-  }
+  .card-content.visible { display: flex; }
 
   @keyframes slide-in {
-    from { opacity: 0; transform: translateX(12px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  .card-number {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 72px;
-    line-height: 1;
-    color: rgba(232,160,32,0.12);
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    pointer-events: none;
+    from { opacity: 0; transform: translateX(8px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
 
   .card-tag {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
     background: rgba(232,160,32,0.1);
     border: 1px solid rgba(232,160,32,0.2);
     color: var(--accent);
     font-family: 'DM Mono', monospace;
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 1.5px;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 2px;
-    width: fit-content;
     text-transform: uppercase;
   }
 
   .card-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
+    font-size: 20px;
     letter-spacing: 1px;
     color: var(--text);
     line-height: 1.1;
-    position: relative;
   }
 
   .card-title::after {
     content: '';
     display: block;
-    width: 40px;
+    width: 28px;
     height: 2px;
     background: var(--accent);
-    margin-top: 10px;
+    margin-top: 5px;
   }
 
   .card-description {
-    font-size: 13px;
-    line-height: 1.65;
+    font-size: 11px;
+    line-height: 1.6;
     color: #b8c0d4;
     font-weight: 300;
   }
@@ -383,111 +325,109 @@
   .card-specs {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 6px;
-    padding: 16px;
+    border-radius: 4px;
+    padding: 8px 10px;
   }
 
   .spec-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12px;
   }
 
   .spec-key {
     color: var(--text-dim);
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
+    font-size: 9px;
     letter-spacing: 0.5px;
   }
 
   .spec-val {
     color: var(--text);
     font-weight: 500;
+    font-size: 10px;
     text-align: right;
-    font-size: 12px;
   }
 
   .card-tip {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: flex-start;
-    background: rgba(76,175,125,0.06);
-    border: 1px solid rgba(76,175,125,0.15);
-    border-radius: 6px;
-    padding: 12px 14px;
+    background: rgba(46,125,50,0.07);
+    border: 1px solid rgba(46,125,50,0.2);
+    border-radius: 4px;
+    padding: 8px 10px;
   }
 
-  .tip-icon {
-    font-size: 14px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
+  .tip-icon { font-size: 11px; flex-shrink: 0; margin-top: 1px; }
 
   .tip-text {
-    font-size: 12px;
-    color: #8dd6ab;
-    line-height: 1.6;
+    font-size: 10px;
+    color: #81c784;
+    line-height: 1.5;
   }
 
-  /* Elements list */
-  .elements-list {
-    padding: 0 28px 16px;
+  /* Elements list pane */
+  .list-pane {
+    width: 170px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    overflow-y: auto;
-    flex-shrink: 0;
-    max-height: 38%;
+    overflow: hidden;
+    background: rgba(15,17,25,0.4);
   }
 
-  .list-title {
+  .list-pane-header {
+    padding: 10px 12px 6px;
     font-family: 'DM Mono', monospace;
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 2px;
     color: var(--text-dim);
     text-transform: uppercase;
-    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+
+  .list-scroll {
+    overflow-y: auto;
+    flex: 1;
+    padding: 4px 0;
   }
 
   .elem-btn {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 7px 12px;
-    border-radius: 6px;
-    border: 1px solid transparent;
+    gap: 8px;
+    padding: 5px 12px;
+    border: none;
     background: transparent;
     cursor: pointer;
-    transition: all 0.15s ease;
-    text-align: left;
     width: 100%;
+    text-align: left;
+    transition: background 0.12s;
+    border-left: 2px solid transparent;
   }
 
-  .elem-btn:hover {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.07);
-  }
+  .elem-btn:hover { background: rgba(255,255,255,0.04); }
 
   .elem-btn.active {
-    background: rgba(232,160,32,0.08);
-    border-color: rgba(232,160,32,0.25);
+    background: rgba(232,160,32,0.07);
+    border-left-color: var(--accent);
   }
 
   .elem-dot {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    background: var(--steel-light);
     border: 1.5px solid var(--text-dim);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-dim);
     flex-shrink: 0;
     transition: all 0.15s;
@@ -500,163 +440,152 @@
   }
 
   .elem-btn.discovered .elem-dot {
-    border-color: var(--safe);
-    color: var(--safe);
-    background: rgba(76,175,125,0.1);
+    border-color: var(--safe-light);
+    color: var(--safe-light);
   }
 
   .elem-name {
-    font-size: 13px;
+    font-size: 11px;
     color: var(--text-dim);
-    font-weight: 400;
     flex: 1;
-    transition: color 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.12s;
   }
 
-  .elem-btn.active .elem-name,
-  .elem-btn:hover .elem-name {
-    color: var(--text);
-  }
+  .elem-btn:hover .elem-name,
+  .elem-btn.active .elem-name { color: var(--text); }
 
   .elem-check {
-    color: var(--safe);
-    font-size: 13px;
+    font-size: 10px;
+    color: var(--safe-light);
     opacity: 0;
-    transition: opacity 0.15s;
+    flex-shrink: 0;
   }
 
-  .elem-btn.discovered .elem-check {
-    opacity: 1;
-  }
+  .elem-btn.discovered .elem-check { opacity: 1; }
 
   /* Score banner */
   .score-banner {
     display: none;
-    padding: 16px 28px;
-    background: linear-gradient(135deg, rgba(76,175,125,0.15), rgba(76,175,125,0.05));
-    border-top: 1px solid rgba(76,175,125,0.3);
-    border-bottom: 1px solid rgba(76,175,125,0.1);
+    padding: 6px 12px;
+    background: linear-gradient(135deg, rgba(46,125,50,0.2), rgba(46,125,50,0.05));
+    border-bottom: 1px solid rgba(46,125,50,0.3);
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    flex-shrink: 0;
   }
 
-  .score-banner.show {
-    display: flex;
-    animation: slide-in 0.4s ease;
-  }
+  .score-banner.show { display: flex; animation: slide-in 0.4s ease; }
+  .score-icon { font-size: 14px; }
+  .score-text { font-size: 11px; color: #81c784; font-weight: 500; }
 
-  .score-icon { font-size: 20px; }
-  .score-text { font-size: 13px; color: #8dd6ab; font-weight: 500; }
+  /* Scrollbar styling */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--steel-light); border-radius: 2px; }
 </style>
 </head>
 <body>
 
-<header>
-  <div>
-    <div class="badge">CUISINE PROFESSIONNELLE</div>
-    <h1>CUTTER SOUS-VIDE</h1>
-    <p>Découvrez les composants de la machine — cliquez sur les points pour explorer</p>
-  </div>
-  <div class="progress-bar">
-    <span class="progress-label" id="progressLabel">0 / 10</span>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
+<div class="square">
+
+  <!-- HEADER -->
+  <header>
+    <div class="badge">AGROALIMENTAIRE</div>
+    <div>
+      <div class="header-title">LIGNE DE FABRICATION</div>
+      <div class="header-sub">Cliquez sur les points pour explorer les composants</div>
     </div>
-  </div>
-</header>
-
-<div class="main">
-  <!-- Image Zone -->
-  <div class="image-zone">
-    <div class="machine-wrapper" id="machineWrapper">
-      <img
-        class="machine-img"
-        src="https://bretinov.bzh/wp-content/uploads/2023/08/Ligne-a-nems-operateur-SYM-Juillet-2022-1.png"
-        alt="Ligne à nems professionnelle"
-        id="machineImg"
-        draggable="false"
-      />
-
-      <!-- Hotspots positionnés en % de l'image -->
-      <!-- 1. Couvercle transparent -->
-      <div class="hotspot" style="top:18%; left:48%;" data-id="1" onclick="selectElement(1)">
-        <div class="hotspot-ring"><span class="hotspot-num">1</span></div>
-      </div>
-      <!-- 2. Bol inox -->
-      <div class="hotspot" style="top:45%; left:50%;" data-id="2" onclick="selectElement(2)">
-        <div class="hotspot-ring"><span class="hotspot-num">2</span></div>
-      </div>
-      <!-- 3. Lames couteaux -->
-      <div class="hotspot" style="top:52%; left:35%;" data-id="3" onclick="selectElement(3)">
-        <div class="hotspot-ring"><span class="hotspot-num">3</span></div>
-      </div>
-      <!-- 4. Panneau de commande -->
-      <div class="hotspot" style="top:28%; left:30%;" data-id="4" onclick="selectElement(4)">
-        <div class="hotspot-ring"><span class="hotspot-num">4</span></div>
-      </div>
-      <!-- 5. Système de mise sous vide -->
-      <div class="hotspot" style="top:38%; left:78%;" data-id="5" onclick="selectElement(5)">
-        <div class="hotspot-ring"><span class="hotspot-num">5</span></div>
-      </div>
-      <!-- 6. Corps / Carter -->
-      <div class="hotspot" style="top:72%; left:48%;" data-id="6" onclick="selectElement(6)">
-        <div class="hotspot-ring"><span class="hotspot-num">6</span></div>
-      </div>
-      <!-- 7. Pied stabilisateur -->
-      <div class="hotspot" style="top:90%; left:30%;" data-id="7" onclick="selectElement(7)">
-        <div class="hotspot-ring"><span class="hotspot-num">7</span></div>
-      </div>
-      <!-- 8. Axe rotatif central -->
-      <div class="hotspot" style="top:48%; left:60%;" data-id="8" onclick="selectElement(8)">
-        <div class="hotspot-ring"><span class="hotspot-num">8</span></div>
-      </div>
-      <!-- 9. Joint d'étanchéité -->
-      <div class="hotspot" style="top:68%; left:72%;" data-id="9" onclick="selectElement(9)">
-        <div class="hotspot-ring"><span class="hotspot-num">9</span></div>
-      </div>
-      <!-- 10. Poignée de levage -->
-      <div class="hotspot" style="top:12%; left:68%;" data-id="10" onclick="selectElement(10)">
-        <div class="hotspot-ring"><span class="hotspot-num">10</span></div>
+    <div class="progress-bar">
+      <span class="progress-label" id="progressLabel">0 / 10</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Side Panel -->
-  <div class="side-panel">
-    <div class="panel-header">
-      <h2>COMPOSANTS</h2>
-      <p class="panel-instruction">
-        <strong>Cliquez sur un point numéroté</strong> sur la machine ou sur un élément ci-dessous pour en apprendre davantage.
-      </p>
-    </div>
+  <div class="body">
 
-    <div class="score-banner" id="scoreBanner">
-      <span class="score-icon">🏆</span>
-      <span class="score-text">Tous les éléments découverts ! Excellent travail !</span>
-    </div>
+    <!-- IMAGE -->
+    <div class="image-zone">
+      <div class="machine-wrapper" id="machineWrapper">
+        <img
+          class="machine-img"
+          src="https://bretinov.bzh/wp-content/uploads/2023/08/Ligne-a-nems-operateur-SYM-Juillet-2022-1.png"
+          alt="Ligne à nems professionnelle"
+          id="machineImg"
+          draggable="false"
+        />
 
-    <div class="info-card" id="infoCard">
-      <div class="card-placeholder" id="cardPlaceholder">
-        <div class="placeholder-icon">🔍</div>
-        <p style="font-size:13px;">Sélectionnez un composant<br>pour afficher son détail</p>
+        <div class="hotspot" style="top:30%; left:52%;" data-id="1" onclick="selectElement(1)">
+          <div class="hotspot-ring"><span class="hotspot-num">1</span></div>
+        </div>
+        <div class="hotspot" style="top:50%; left:45%;" data-id="2" onclick="selectElement(2)">
+          <div class="hotspot-ring"><span class="hotspot-num">2</span></div>
+        </div>
+        <div class="hotspot" style="top:55%; left:32%;" data-id="3" onclick="selectElement(3)">
+          <div class="hotspot-ring"><span class="hotspot-num">3</span></div>
+        </div>
+        <div class="hotspot" style="top:28%; left:30%;" data-id="4" onclick="selectElement(4)">
+          <div class="hotspot-ring"><span class="hotspot-num">4</span></div>
+        </div>
+        <div class="hotspot" style="top:35%; left:78%;" data-id="5" onclick="selectElement(5)">
+          <div class="hotspot-ring"><span class="hotspot-num">5</span></div>
+        </div>
+        <div class="hotspot" style="top:72%; left:50%;" data-id="6" onclick="selectElement(6)">
+          <div class="hotspot-ring"><span class="hotspot-num">6</span></div>
+        </div>
+        <div class="hotspot" style="top:88%; left:22%;" data-id="7" onclick="selectElement(7)">
+          <div class="hotspot-ring"><span class="hotspot-num">7</span></div>
+        </div>
+        <div class="hotspot" style="top:48%; left:62%;" data-id="8" onclick="selectElement(8)">
+          <div class="hotspot-ring"><span class="hotspot-num">8</span></div>
+        </div>
+        <div class="hotspot" style="top:68%; left:72%;" data-id="9" onclick="selectElement(9)">
+          <div class="hotspot-ring"><span class="hotspot-num">9</span></div>
+        </div>
+        <div class="hotspot" style="top:15%; left:68%;" data-id="10" onclick="selectElement(10)">
+          <div class="hotspot-ring"><span class="hotspot-num">10</span></div>
+        </div>
       </div>
+    </div>
 
-      <div class="card-content" id="cardContent">
-        <div style="position:relative;">
+    <!-- BOTTOM PANEL -->
+    <div class="bottom-panel">
+
+      <!-- Info card -->
+      <div class="info-pane">
+        <div class="score-banner" id="scoreBanner">
+          <span class="score-icon">🏆</span>
+          <span class="score-text">Tous les éléments découverts !</span>
+        </div>
+
+        <div class="card-placeholder" id="cardPlaceholder">
+          <div class="placeholder-icon">🔍</div>
+          <p style="font-size:11px;color:var(--text-dim);">Sélectionnez un composant</p>
+        </div>
+
+        <div class="card-content" id="cardContent">
           <span class="card-tag" id="cardTag">COMPOSANT</span>
-          <span class="card-number" id="cardNumber">01</span>
-        </div>
-        <div class="card-title" id="cardTitle">Titre</div>
-        <div class="card-description" id="cardDesc">Description</div>
-        <div class="card-specs" id="cardSpecs"></div>
-        <div class="card-tip" id="cardTip">
-          <span class="tip-icon">💡</span>
-          <span class="tip-text" id="cardTipText"></span>
+          <div class="card-title" id="cardTitle">Titre</div>
+          <div class="card-description" id="cardDesc">Description</div>
+          <div class="card-specs" id="cardSpecs"></div>
+          <div class="card-tip">
+            <span class="tip-icon">💡</span>
+            <span class="tip-text" id="cardTipText"></span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="elements-list" id="elementsList"></div>
+      <!-- Elements list -->
+      <div class="list-pane">
+        <div class="list-pane-header">Composants</div>
+        <div class="list-scroll" id="elementsList"></div>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -664,133 +593,133 @@
 const elements = [
   {
     id: 1,
-    name: "Couvercle transparent",
-    tag: "SÉCURITÉ / VISION",
-    title: "Couvercle en polycarbonate",
-    desc: "Le couvercle transparent est fabriqué en polycarbonate alimentaire résistant aux chocs. Il permet de visualiser le contenu en cours de traitement tout en assurant une protection totale contre les projections et les lames en rotation.",
+    name: "Convoyeur principal",
+    tag: "TRANSPORT",
+    title: "Tapis convoyeur",
+    desc: "Le convoyeur principal transporte les produits tout au long de la ligne de production. Sa vitesse est réglable pour s'adapter au cadence de production souhaitée.",
     specs: [
-      { k: "Matériau", v: "Polycarbonate alimentaire" },
-      { k: "Fonction", v: "Confinement & Visualisation" },
-      { k: "Verrouillage", v: "Sécurité de démarrage" },
+      { k: "Matériau", v: "Inox + bande alimentaire" },
+      { k: "Vitesse", v: "Réglable en continu" },
+      { k: "Norme", v: "HACCP / CE" },
     ],
-    tip: "Le moteur ne peut démarrer que si le couvercle est correctement verrouillé — un système de sécurité essentiel en milieu professionnel."
+    tip: "La tension de la bande convoyeur doit être vérifiée quotidiennement pour éviter tout glissement ou bourrage produit."
   },
   {
     id: 2,
-    name: "Bol inox",
-    tag: "RÉCEPTION",
-    title: "Bol en inox 18/10",
-    desc: "Le bol est fabriqué en acier inoxydable 18/10, résistant à la corrosion et compatible avec les normes alimentaires HACCP. Sa forme arrondie optimise le mouvement centrifuge des aliments et garantit un traitement homogène.",
+    name: "Station de garnissage",
+    tag: "GARNISSAGE",
+    title: "Zone de dépose farce",
+    desc: "La station de garnissage permet le dépôt précis de la farce sur les feuilles de riz ou pâte à nems. La quantité est dosée automatiquement ou manuellement selon le modèle.",
     specs: [
-      { k: "Matériau", v: "Inox 18/10 (AISI 304)" },
-      { k: "Capacité", v: "200 à 1000 litres selon modèle" },
-      { k: "Norme", v: "Alimentaire HACCP" },
+      { k: "Dosage", v: "Volumétrique ou manuel" },
+      { k: "Réglage", v: "Quantité et position" },
+      { k: "Hygiène", v: "Démontage complet" },
     ],
-    tip: "Le bol est conçu pour un nettoyage facile — vérifiez toujours qu'il n'y a pas de résidus coincés sous le joint après chaque utilisation."
+    tip: "Un dosage régulier garantit une cuisson homogène et réduit le taux de produits non-conformes en fin de ligne."
   },
   {
     id: 3,
-    name: "Lames couteaux",
-    tag: "ÉLÉMENT COUPANT",
-    title: "Couteaux en étoile",
-    desc: "Le bloc de couteaux en étoile est constitué de lames incurvées en acier inoxydable trempé. Leur géométrie permet de hacher, mixer et émulsionner les préparations en quelques secondes. Le nombre de lames varie selon la configuration.",
+    name: "Zone opérateur",
+    tag: "POSTE DE TRAVAIL",
+    title: "Poste de travail opérateur",
+    desc: "L'opérateur intervient à ce poste pour superviser le placement des feuilles, corriger les défauts de garnissage et assurer la qualité des produits avant l'étape de roulage.",
     specs: [
-      { k: "Matériau", v: "Inox trempé" },
-      { k: "Type", v: "Couteaux en étoile courbés" },
-      { k: "Rotation", v: "Jusqu'à 3 000 tr/min" },
+      { k: "Ergonomie", v: "Hauteur réglable" },
+      { k: "EPI requis", v: "Charlotte, masque, gants, surblouse" },
+      { k: "Accès", v: "Dégagement latéral 80 cm min." },
     ],
-    tip: "Ne jamais toucher les lames à mains nues. Utiliser l'outil de démontage fourni pour le nettoyage."
+    tip: "Le port des EPI (Équipements de Protection Individuelle) est obligatoire à ce poste pour garantir la sécurité alimentaire."
   },
   {
     id: 4,
     name: "Panneau de commande",
     tag: "INTERFACE",
-    title: "Tableau de bord digital",
-    desc: "Le panneau de commande centralise toutes les fonctions opérationnelles de la machine : vitesse de rotation, durée de traitement, gestion du vide et programmes personnalisés. L'interface est souvent tactile ou à touches membranaires étanches.",
+    title: "Écran de contrôle tactile",
+    desc: "Le panneau de commande centralise le pilotage de la ligne : vitesse de convoyage, paramètres de roulage, alarmes et programmes de production mémorisés.",
     specs: [
-      { k: "Interface", v: "Tactile / membranaire IP65" },
-      { k: "Fonctions", v: "Vitesse, minuterie, vide" },
-      { k: "Programmes", v: "Jusqu'à 99 recettes mémorisables" },
+      { k: "Interface", v: "Écran tactile couleur" },
+      { k: "Protection", v: "IP65 (étanche)" },
+      { k: "Programmes", v: "Mémorisation recettes" },
     ],
-    tip: "Les modèles récents permettent de programmer des cycles automatiques combinant cuttage, chauffage et mise sous vide en une seule séquence."
+    tip: "Consulter le journal des alarmes régulièrement depuis le panneau pour anticiper les besoins de maintenance préventive."
   },
   {
     id: 5,
-    name: "Système de mise sous vide",
-    tag: "TECHNOLOGIE CLÉ",
-    title: "Pompe à vide intégrée",
-    desc: "La pompe à vide est intégrée directement dans le corps de la machine. Elle retire l'air du bol avant ou pendant le traitement, ce qui réduit l'oxydation, préserve les arômes et améliore la texture des émulsions (mousses, sauces, farces).",
+    name: "Module de roulage",
+    tag: "FORMAGE",
+    title: "Tête de roulage automatique",
+    desc: "Le module de roulage forme automatiquement les nems en enroulant la pâte autour de la farce. Les rouleaux de formage sont réglables en pression et en vitesse.",
     specs: [
-      { k: "Type", v: "Pompe à vide à palettes" },
-      { k: "Niveau de vide", v: "Jusqu'à -0,95 bar" },
-      { k: "Bénéfice", v: "Anti-oxydation, texture fine" },
+      { k: "Type", v: "Rouleaux de formage inox" },
+      { k: "Réglage", v: "Pression + vitesse" },
+      { k: "Format", v: "Adapté selon gabarit" },
     ],
-    tip: "La mise sous vide est particulièrement efficace pour les farces de poisson et les mousses délicates qui nécessitent une texture ultra-lisse sans bulles d'air."
+    tip: "Un réglage précis de la pression des rouleaux évite les déchirures de pâte et garantit des nems bien fermés."
   },
   {
     id: 6,
-    name: "Corps / Carter",
+    name: "Structure porteuse",
     tag: "STRUCTURE",
-    title: "Structure portante en inox",
-    desc: "Le carter principal constitue l'ossature de la machine. Il intègre le groupe moteur, l'électronique de contrôle et la pompe à vide. Conçu en acier inoxydable brossé, il résiste aux environnements humides et aux produits de nettoyage professionnels.",
+    title: "Châssis inox",
+    desc: "Le châssis constitue la colonne vertébrale de la ligne. Fabriqué en inox alimentaire, il supporte tous les modules et est conçu pour un nettoyage en place (NEP) facilité.",
     specs: [
-      { k: "Matériau", v: "Inox brossé" },
-      { k: "Contenu", v: "Moteur, électronique, pompe" },
-      { k: "Protection", v: "IP44 minimum" },
+      { k: "Matériau", v: "Inox 304 brossé" },
+      { k: "Assemblage", v: "Modulaire" },
+      { k: "Nettoyage", v: "Compatible NEP" },
     ],
-    tip: "Le carter doit être maintenu propre et sec. Évitez de diriger un jet d'eau directement sur les zones de ventilation latérales."
+    tip: "Vérifier l'horizontalité du châssis lors de l'installation — un défaut de niveau peut perturber l'alignement des produits sur le convoyeur."
   },
   {
     id: 7,
-    name: "Pieds stabilisateurs",
-    tag: "SUPPORT",
-    title: "Pieds anti-vibration",
-    desc: "Les pieds stabilisateurs en caoutchouc alimentaire absorbent les vibrations générées par la rotation à haute vitesse des couteaux. Ils assurent la stabilité de la machine sur le plan de travail et protègent la surface contre les rayures.",
+    name: "Pieds réglables",
+    tag: "NIVELLEMENT",
+    title: "Pieds de mise à niveau",
+    desc: "Les pieds réglables permettent le nivellement précis de la ligne sur tout type de sol. Ils absorbent les vibrations et disposent souvent de roulettes pour faciliter les déplacements.",
     specs: [
-      { k: "Matériau", v: "Caoutchouc alimentaire" },
-      { k: "Fonction", v: "Anti-vibration & anti-dérapage" },
-      { k: "Réglage", v: "Parfois réglables en hauteur" },
+      { k: "Matériau", v: "Inox + patins antidérapants" },
+      { k: "Réglage", v: "±30 mm en hauteur" },
+      { k: "Option", v: "Roulettes avec frein" },
     ],
-    tip: "Vérifier régulièrement que les pieds ne sont pas usés ou décollés — une machine instable pendant la rotation peut être dangereuse."
+    tip: "Un sol légèrement incliné peut suffire à désaligner le convoyeur — vérifier le niveau avec un niveau à bulle après chaque déplacement."
   },
   {
     id: 8,
-    name: "Axe rotatif central",
-    tag: "TRANSMISSION",
-    title: "Arbre d'entraînement",
-    desc: "L'arbre central transmet le couple du moteur électrique directement au bloc de couteaux. Il est usiné avec une grande précision pour garantir un équilibrage parfait à toutes les vitesses. Un déséquilibre peut générer des vibrations et endommager les roulements.",
+    name: "Système de guidage",
+    tag: "GUIDAGE",
+    title: "Guides latéraux de produit",
+    desc: "Les guides latéraux maintiennent les produits centrés sur le convoyeur tout au long du processus. Ils sont ajustables pour s'adapter à différents formats et largeurs de produits.",
     specs: [
-      { k: "Matériau", v: "Acier inox usiné" },
-      { k: "Couplage", v: "Direct (arbre moteur)" },
-      { k: "Équilibrage", v: "Dynamique, certifié" },
+      { k: "Matériau", v: "Inox alimentaire" },
+      { k: "Réglage", v: "Largeur variable" },
+      { k: "Fixation", v: "Rapide sans outil" },
     ],
-    tip: "L'arbre ne doit jamais être forcé lors du montage des couteaux. Utiliser uniquement les outils fournis par le fabricant."
+    tip: "Ajuster les guides au plus près du produit sans les serrer — un écart de 2 mm de chaque côté est idéal pour guider sans contraindre."
   },
   {
     id: 9,
-    name: "Joint d'étanchéité",
-    tag: "ÉTANCHÉITÉ",
-    title: "Joint torique de couvercle",
-    desc: "Le joint torique en silicone alimentaire assure l'étanchéité entre le bol et le couvercle. Il est indispensable au maintien du vide lors des cycles sous vide. Un joint endommagé ou encrassé compromet l'efficacité du système de mise sous vide.",
+    name: "Zone de sortie",
+    tag: "SORTIE",
+    title: "Déchargement produits finis",
+    desc: "La zone de sortie réceptionne les nems formés et prêts pour la cuisson ou le conditionnement. Elle peut être couplée à un système de comptage ou d'alimentation de friteuse.",
     specs: [
-      { k: "Matériau", v: "Silicone alimentaire FDA" },
-      { k: "Résistance", v: "-60°C à +200°C" },
-      { k: "Remplacement", v: "Pièce consommable annuelle" },
+      { k: "Raccordement", v: "Friteuse ou conditionneuse" },
+      { k: "Capteurs", v: "Comptage optique en option" },
+      { k: "Hygiène", v: "Surface lisse, sans angle mort" },
     ],
-    tip: "Inspecter le joint à chaque nettoyage. Le moindre entaille ou déformation doit conduire à son remplacement immédiat pour maintenir l'intégrité du vide."
+    tip: "Prévoir un bac collecteur à la sortie pour récupérer les produits en cas d'arrêt d'urgence de la ligne aval."
   },
   {
     id: 10,
-    name: "Poignée de levage",
-    tag: "ERGONOMIE",
-    title: "Poignée d'ouverture du couvercle",
-    desc: "La poignée permet l'ouverture et la fermeture du couvercle en toute sécurité. Sur certains modèles, elle intègre un mécanisme de verrouillage qui empêche toute ouverture accidentelle pendant le fonctionnement.",
+    name: "Colonne de signalisation",
+    tag: "SÉCURITÉ",
+    title: "Feu de signalisation",
+    desc: "La colonne lumineuse indique l'état de la ligne en temps réel : vert (fonctionnement normal), orange (avertissement), rouge (arrêt d'urgence ou défaut critique).",
     specs: [
-      { k: "Matériau", v: "Inox ou polymère alimentaire" },
-      { k: "Ergonomie", v: "Prise en main sécurisée" },
-      { k: "Sécurité", v: "Verrouillage mécanique" },
+      { k: "Couleurs", v: "Vert / Orange / Rouge" },
+      { k: "Signal", v: "Lumineux + sonore" },
+      { k: "Norme", v: "ISO 11161 / EN ISO 13849" },
     ],
-    tip: "Ne jamais forcer l'ouverture du couvercle pendant ou juste après un cycle sous vide — attendre que la pression soit équilibrée avant d'ouvrir."
+    tip: "Ne jamais ignorer un signal orange — il annonce souvent un défaut mineur qui, s'il n'est pas traité, peut évoluer vers un arrêt complet de la ligne."
   },
 ];
 
@@ -799,11 +728,6 @@ let activeId = null;
 
 // Build list
 const listEl = document.getElementById('elementsList');
-const listTitle = document.createElement('div');
-listTitle.className = 'list-title';
-listTitle.textContent = 'Tous les composants';
-listEl.appendChild(listTitle);
-
 elements.forEach(el => {
   const btn = document.createElement('button');
   btn.className = 'elem-btn';
@@ -825,7 +749,6 @@ function selectElement(id) {
   discovered.add(id);
   updateProgress();
 
-  // Update hotspots
   document.querySelectorAll('.hotspot').forEach(h => {
     h.classList.remove('active');
     if (discovered.has(parseInt(h.dataset.id))) h.classList.add('discovered');
@@ -833,35 +756,26 @@ function selectElement(id) {
   const activeHotspot = document.querySelector(`.hotspot[data-id="${id}"]`);
   if (activeHotspot) activeHotspot.classList.add('active');
 
-  // Update list buttons
   document.querySelectorAll('.elem-btn').forEach(b => b.classList.remove('active'));
   const activeBtn = document.getElementById(`btn-${id}`);
-  if (activeBtn) {
-    activeBtn.classList.add('active');
-    activeBtn.classList.add('discovered');
-  }
+  if (activeBtn) { activeBtn.classList.add('active', 'discovered'); }
 
-  // Show info
   document.getElementById('cardPlaceholder').style.display = 'none';
   const content = document.getElementById('cardContent');
   content.classList.remove('visible');
-  void content.offsetWidth; // reflow for animation
+  void content.offsetWidth;
   content.classList.add('visible');
 
   document.getElementById('cardTag').textContent = el.tag;
-  document.getElementById('cardNumber').textContent = String(id).padStart(2, '0');
   document.getElementById('cardTitle').textContent = el.title;
   document.getElementById('cardDesc').textContent = el.desc;
 
-  // Specs
-  const specsEl = document.getElementById('cardSpecs');
-  specsEl.innerHTML = el.specs.map(s =>
+  document.getElementById('cardSpecs').innerHTML = el.specs.map(s =>
     `<div class="spec-row"><span class="spec-key">${s.k}</span><span class="spec-val">${s.v}</span></div>`
   ).join('');
 
   document.getElementById('cardTipText').textContent = el.tip;
 
-  // Check completion
   if (discovered.size === elements.length) {
     document.getElementById('scoreBanner').classList.add('show');
   }
